@@ -1,0 +1,1078 @@
+<!doctype html><html lang="fa" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#04234b"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="انبارگردان"><link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="icon-180.png"><title>انبارگردان</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'"><style>/* ساختار: همه‌چیز باکس گرد؛ با لمس یا انتخاب، زمینه آبی و نوشته/آیکون سفید می‌شود */
+:root{
+  --bg:#eef1f8;--card:#ffffff;--fg:#13183a;--muted:#6a7392;--line:#e0e5f1;
+  --accent:#1b2b8c;--head:#1b2b8c;--on-accent:#ffffff;--soft:#e7ebfa;
+  --red:#b3122b;--red-soft:#fde7ea;--green:#13803c;--green-soft:#e1f6e8;--amber:#a15c00;--amber-soft:#fff1d6;
+  --sale:#8d0f1f;--buy:#0f6b34;--r:18px;--r-sm:14px;
+  --s1:#2a78d6;--s2:#eb6834;--s3:#1baf7a;--s4:#eda100;
+  --font:'Vazirmatn',system-ui,-apple-system,Tahoma,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0c0f20;--card:#171b35;--fg:#e8ebff;--muted:#99a2c8;--line:#262b4d;
+  --accent:#5a72ff;--head:#1c2570;--on-accent:#ffffff;--soft:#222850;
+  --red:#ff7b8f;--red-soft:#3a1a24;--green:#58d98a;--green-soft:#15301f;--amber:#ffc266;--amber-soft:#3a2d12;
+  --sale:#6e1220;--buy:#0d4f29;--s1:#3987e5;--s2:#d95926;--s3:#199e70;--s4:#c98500;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0c0f20;--card:#171b35;--fg:#e8ebff;--muted:#99a2c8;--line:#262b4d;
+  --accent:#5a72ff;--head:#1c2570;--on-accent:#ffffff;--soft:#222850;
+  --red:#ff7b8f;--red-soft:#3a1a24;--green:#58d98a;--green-soft:#15301f;--amber:#ffc266;--amber-soft:#3a2d12;
+  --sale:#6e1220;--buy:#0d4f29;--s1:#3987e5;--s2:#d95926;--s3:#199e70;--s4:#c98500;color-scheme:dark}
+
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{background:var(--card)}html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--font);font-size:15px;line-height:1.6;
+  padding-left:0;padding-right:0;overscroll-behavior:none}
+button,input,select,textarea{font:inherit;color:inherit}
+button{border:0;background:none;cursor:pointer;padding:0}
+.ico{flex:none;display:block}
+.num,.tabnum{font-variant-numeric:tabular-nums}
+#app{position:relative;height:100%;max-width:560px;margin:0 auto;display:flex;flex-direction:column;background:var(--bg)}
+#main{flex:1;overflow-y:auto;overflow-x:hidden;padding-bottom:160px;-webkit-overflow-scrolling:touch}
+
+/* لمس و انتخاب */
+.tap{transition:background-color .14s,color .14s,border-color .14s,transform .08s;cursor:pointer;user-select:none;-webkit-user-select:none}
+.tap:active,.tap.on{background:var(--accent)!important;color:var(--on-accent)!important;border-color:var(--accent)!important}
+.tap:active *,.tap.on *{color:inherit!important;border-color:currentColor}
+.tap:active{transform:scale(.985)}
+.tap:active .chipx,.tap.on .chipx{background:rgba(255,255,255,.2)!important}
+
+/* سرتیتر */
+.top{background:var(--head);color:#fff;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-top:max(14px,env(safe-area-inset-top,0px));padding-bottom:14px;border-radius:0 0 26px 26px}
+.top h1{margin:0;font-size:19px;font-weight:700}
+.top .sub{opacity:.8;font-size:13px}
+.ledger-pick{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.14);color:#fff;border-radius:var(--r);padding:10px 14px;width:100%;text-align:right}
+.ledger-pick .t{flex:1;min-width:0}
+.ledger-pick b{display:block;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ledger-pick small{opacity:.8;font-size:12px}
+.ledger-pick.tap:active,.ledger-pick.tap.on{background:#fff!important;color:var(--accent)!important}
+.seg{display:flex;gap:8px;margin-top:12px}
+.seg button{flex:1;padding:10px;border-radius:var(--r-sm);background:rgba(255,255,255,.14);color:#fff;font-weight:500}
+.seg button.on{background:#fff!important;color:var(--accent)!important}
+.seg button:active{background:#fff!important;color:var(--accent)!important}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.top .chips .chip{padding:6px 14px;border-radius:999px;background:rgba(255,255,255,.14);color:#fff;font-size:13px}
+.top .chips .chip.on{background:#fff!important;color:var(--accent)!important}
+.top .chips .chip:active{background:#fff!important;color:var(--accent)!important}
+.fchips{display:flex;gap:8px;flex-wrap:wrap}
+.fchips .chip{padding:7px 14px;border-radius:999px;background:var(--bg);color:var(--fg);border:1px solid var(--line);font-size:13.5px}
+.pbody .fchips .chip{background:var(--card)}
+.pbody .box .fchips .chip,.sheet .fchips .chip{background:var(--bg)}
+
+.status{background:var(--card);color:var(--fg);border-radius:var(--r);padding:14px 16px;margin-top:12px}
+.status .lbl{font-size:12px;color:var(--muted)}
+.status .val{font-size:20px;font-weight:700;display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+.status .val small{font-size:13px;font-weight:500}
+.neg{color:var(--red)}.pos{color:var(--green)}.mut{color:var(--muted)}
+
+.wrap{padding:14px max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px))}
+.search{display:flex;align-items:center;gap:8px;background:var(--card);border-radius:999px;padding:10px 16px;color:var(--muted);border:1px solid var(--line)}
+.search input{flex:1;min-width:0;border:0;background:none;outline:0;color:var(--fg)}
+.count{color:var(--muted);font-size:13px;margin:12px 4px 6px}
+.list{display:flex;flex-direction:column;gap:8px}
+.row{display:flex;align-items:center;gap:12px;background:var(--card);border-radius:var(--r);padding:12px 14px;width:100%;text-align:right;color:var(--fg)}
+.row .av{width:44px;height:44px;border-radius:14px;background:var(--soft);color:var(--accent);display:grid;place-items:center;flex:none}
+.row .tx{flex:1;min-width:0}
+.row .tx b{display:block;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row .tx small{display:block;color:var(--muted);font-size:12px;line-height:1.5}
+.row .end{text-align:left;flex:none;max-width:48%}
+.row .end b{display:block;font-weight:700;font-size:14px}
+.row .end small{display:block;font-size:12px}
+.row.tap:active .av,.row.tap.on .av{background:rgba(255,255,255,.2)!important}
+.av.red{background:var(--red-soft);color:var(--red)}.av.green{background:var(--green-soft);color:var(--green)}.av.amber{background:var(--amber-soft);color:var(--amber)}
+.day{color:var(--muted);font-size:12.5px;margin:14px 4px 6px}
+.empty{text-align:center;color:var(--muted);padding:34px 20px;background:var(--card);border-radius:var(--r);margin-top:12px}
+.empty b{display:block;color:var(--fg);margin-bottom:4px}
+
+/* دکمه شناور و ناوبری */
+.fabs{position:fixed;bottom:calc(76px + env(safe-area-inset-bottom,0px));left:max(16px,env(safe-area-inset-left,0px));display:flex;gap:10px;align-items:center;z-index:20}
+.fab{width:58px;height:58px;border-radius:20px;background:var(--accent);color:#fff;display:grid;place-items:center;box-shadow:0 8px 22px rgba(20,30,110,.35)}
+.fab.tap:active{background:var(--fg)!important;color:var(--bg)!important}
+.fab-x{height:50px;padding:0 22px;border-radius:18px;background:var(--accent);color:#fff;font-weight:600;box-shadow:0 8px 22px rgba(20,30,110,.3)}
+.fab-x.tap:active{background:var(--fg)!important;color:var(--bg)!important}
+nav.bar{position:fixed;bottom:0;left:0;right:0;max-width:560px;margin:0 auto;background:var(--card);border-top:1px solid var(--line);display:flex;gap:4px;padding:8px max(10px,env(safe-area-inset-right,0px)) calc(8px + env(safe-area-inset-bottom,0px)) max(10px,env(safe-area-inset-left,0px));z-index:30;border-radius:22px 22px 0 0}
+nav.bar button{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 2px;border-radius:14px;font-size:11.5px;color:var(--muted)}
+nav.bar button.on{color:#fff}
+
+/* باکس‌ها */
+.box{background:var(--card);border-radius:var(--r);padding:12px 14px;border:1px solid transparent}
+.boxes{display:grid;gap:8px}
+.g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:1fr 1fr 1fr}
+.cell{background:var(--card);border-radius:var(--r-sm);padding:10px 12px;text-align:right;min-width:0}
+.cell small{display:block;color:var(--muted);font-size:12px}
+.cell b{font-weight:600;font-size:14.5px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;padding:13px 16px;border-radius:var(--r-sm);background:var(--accent);color:#fff;font-weight:600;width:100%}
+.btn.ghost{background:var(--card);color:var(--accent);border:1.5px solid var(--accent)}
+.btn.danger{background:var(--red-soft);color:var(--red)}
+.btn.danger.tap:active{background:var(--red)!important;color:#fff!important}
+.btn.ghost.tap:active,.btn.ghost.tap.on{background:var(--accent)!important}
+.btn.tap:active{background:var(--fg)!important;color:var(--bg)!important}
+.btn.ghost.tap:active{background:var(--accent)!important;color:#fff!important}
+.btns{display:flex;gap:8px}
+.btns .btn{flex:1}
+.pill{display:inline-block;padding:2px 10px;border-radius:999px;font-size:12px;background:var(--soft);color:var(--accent)}
+.pill.red{background:var(--red-soft);color:var(--red)}.pill.green{background:var(--green-soft);color:var(--green)}.pill.amber{background:var(--amber-soft);color:var(--amber)}
+
+/* فرم‌ها */
+.f{position:relative;margin-top:14px}
+.f label{position:absolute;top:-9px;right:14px;background:var(--bg);padding:0 6px;font-size:12px;color:var(--accent);z-index:1}
+.sheet .f label{background:var(--card)}
+.f input,.f select,.f textarea{width:100%;background:var(--card);border:1.5px solid var(--line);border-radius:var(--r-sm);padding:13px 14px;outline:0;appearance:none;-webkit-appearance:none;min-height:50px}
+.sheet .f input,.sheet .f select,.sheet .f textarea{background:var(--bg)}
+.f input:focus,.f select:focus,.f textarea:focus{border-color:var(--accent)}
+.f textarea{min-height:90px;resize:vertical}
+.f.sel::after{content:"";position:absolute;left:16px;top:50%;width:8px;height:8px;border-left:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:translateY(-70%) rotate(-45deg);pointer-events:none}
+.f .pick{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;background:var(--card);border:1.5px solid var(--line);border-radius:var(--r-sm);padding:13px 14px;min-height:50px;text-align:right}
+.sheet .f .pick{background:var(--bg)}
+.hint{font-size:12.5px;color:var(--muted);margin:6px 4px 0}
+.hint.bad{color:var(--red)}
+.lines{display:flex;flex-direction:column;gap:2px}
+.line{display:flex;justify-content:space-between;gap:10px;padding:7px 2px;align-items:baseline}
+.line.big{font-weight:700;font-size:16px}
+.line small{color:var(--muted)}
+.chk{display:flex;align-items:center;gap:10px;padding:8px 2px;width:100%;text-align:right}
+.chk .b{width:24px;height:24px;border-radius:8px;border:2px solid var(--line);display:grid;place-items:center;flex:none;color:transparent}
+.chk.on .b{background:var(--accent);border-color:var(--accent);color:#fff}
+.sec{margin-top:14px}
+.sec h3{margin:0 4px 8px;font-size:14px;color:var(--muted);font-weight:600}
+
+/* صفحه و برگه */
+#pages,#sheets{position:fixed;inset:0;pointer-events:none;z-index:50}
+.page{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;pointer-events:auto;max-width:560px;margin:0 auto;animation:slide .2s ease-out}
+@keyframes slide{from{transform:translateX(-24px);opacity:0}to{transform:none;opacity:1}}
+.phead{background:var(--head);color:#fff;display:flex;align-items:center;gap:10px;padding:max(14px,env(safe-area-inset-top,0px)) max(14px,env(safe-area-inset-right,0px)) 14px max(14px,env(safe-area-inset-left,0px));border-radius:0 0 22px 22px;flex:none}
+.page.sale .phead{background:var(--sale)}.page.buy .phead{background:var(--buy)}
+.phead h2{margin:0;flex:1;font-size:17px;font-weight:700;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hbtn{width:40px;height:40px;border-radius:13px;background:rgba(255,255,255,.16);color:#fff;display:grid;place-items:center;flex:none}
+.hbtn.tap:active{background:#fff!important;color:var(--accent)!important}
+.hr{display:flex;gap:8px}
+.pbody{flex:1;overflow-y:auto;overflow-x:hidden;padding:6px max(16px,env(safe-area-inset-right,0px)) 30px max(16px,env(safe-area-inset-left,0px))}
+.pfoot{flex:none;padding:10px max(16px,env(safe-area-inset-right,0px)) calc(12px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));background:var(--bg);border-top:1px solid var(--line);display:flex;gap:8px}
+.sw{position:fixed;inset:0;pointer-events:auto;display:flex;flex-direction:column;justify-content:flex-end;max-width:560px;margin:0 auto}
+.sbk{position:absolute;inset:0;background:rgba(8,10,30,.5);animation:fade .18s}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.sheet{position:relative;background:var(--card);border-radius:26px 26px 0 0;padding:10px max(18px,env(safe-area-inset-right,0px)) calc(18px + env(safe-area-inset-bottom,0px)) max(18px,env(safe-area-inset-left,0px));max-height:88%;overflow-y:auto;animation:up .22s ease-out}
+@keyframes up{from{transform:translateY(40px);opacity:.6}to{transform:none;opacity:1}}
+.grab{width:42px;height:5px;border-radius:9px;background:var(--line);margin:0 auto 12px}
+.sheet h3.st{margin:4px 2px 4px;font-size:17px}
+.acts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
+.acts button{padding:18px 10px;border-radius:var(--r);font-weight:600;font-size:15px;display:flex;flex-direction:column;align-items:center;gap:6px}
+.acts .g{background:var(--green-soft);color:var(--green)}.acts .r{background:var(--red-soft);color:var(--red)}
+.acts .b{background:var(--soft);color:var(--accent)}
+.acts button.tap:active{background:var(--accent)!important;color:#fff!important}
+.pr{display:flex;gap:10px;margin-top:10px}
+.pr .btn{flex:1}
+.toast{position:fixed;left:50%;bottom:calc(100px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--fg);color:var(--bg);padding:11px 18px;border-radius:14px;z-index:99;max-width:88%;text-align:center;font-size:14px;animation:fade .15s}
+.toast.err{background:var(--red);color:#fff}
+
+/* تقویم */
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center;margin-top:10px}
+.cal .w{font-size:12px;color:var(--accent);padding:6px 0}
+.cal button{aspect-ratio:1;border-radius:12px;display:grid;place-items:center;background:var(--bg)}
+.cal span{aspect-ratio:1}
+.calh{display:flex;align-items:center;justify-content:space-between;margin-top:6px}
+.calh b{font-size:16px}
+.calh button{width:40px;height:40px;border-radius:12px;background:var(--bg);display:grid;place-items:center}
+
+.mrow{display:flex;gap:10px;align-items:center;justify-content:space-between}
+.items .it{background:var(--card);border-radius:var(--r);padding:12px 14px;width:100%;text-align:right;display:block}
+.it .a{display:flex;justify-content:space-between;gap:8px;font-weight:600}
+.it .b2{display:flex;justify-content:space-between;gap:8px;color:var(--muted);font-size:13px;margin-top:2px}
+.tbl{width:100%;border-collapse:collapse;font-size:13.5px}
+.tbl th{color:var(--muted);font-weight:500;text-align:right;padding:6px 4px}
+.tbl td{padding:8px 4px;border-top:1px solid var(--line)}
+.tbl td:not(:first-child),.tbl th:not(:first-child){text-align:left}
+textarea.big{width:100%;min-height:150px;background:var(--bg);border:1.5px solid var(--line);border-radius:var(--r-sm);padding:12px;direction:ltr;text-align:left;font-family:ui-monospace,Menlo,monospace;font-size:12px}
+.ok-note{background:var(--green-soft);color:var(--green);border-radius:var(--r-sm);padding:10px 12px;font-size:13px;margin-top:10px}
+.warn-note{background:var(--amber-soft);color:var(--amber);border-radius:var(--r-sm);padding:10px 12px;font-size:13px;margin-top:10px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* آمار و نمودار */
+.leg{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin:2px 2px 8px}
+.leg i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-left:6px;vertical-align:-1px}
+.ch{width:100%;height:auto;display:block;direction:ltr}
+.ch text{font-family:var(--font);font-size:9.5px;fill:var(--muted)}
+.ch .grid{stroke:var(--line);stroke-width:1}
+.ch .hit{fill:transparent;cursor:pointer}
+.ch .sel{fill:var(--soft)}
+.rk{display:flex;flex-direction:column;gap:10px}
+.rk .r1{display:grid;grid-template-columns:1fr auto;gap:2px 10px;align-items:baseline}
+.rk .r1 b{font-weight:600;font-size:14px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rk .r1 span{font-size:13px;color:var(--fg)}
+.rk .tr{grid-column:1/-1;height:8px;border-radius:4px;background:var(--soft);overflow:hidden}
+.rk .tr i{display:block;height:100%;border-radius:4px}
+.rk small{grid-column:1/-1;color:var(--muted);font-size:12px}
+.wk{display:flex;gap:6px;align-items:flex-end;height:130px;padding-top:18px}
+.wk .c{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%;gap:4px;min-width:0}
+.wk .c i{display:block;width:100%;max-width:34px;border-radius:5px 5px 0 0;background:var(--s1);min-height:2px}
+.wk .c em{font-style:normal;font-size:11.5px;color:var(--muted)}
+.wk .c b{font-size:10.5px;font-weight:600;white-space:nowrap}
+.mix{display:flex;gap:2px;height:16px;border-radius:8px;overflow:hidden}
+.mix i{display:block;height:100%}
+.mixl{display:grid;grid-template-columns:1fr 1fr;gap:6px 10px;margin-top:10px;font-size:13px}
+.mixl i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-left:6px}
+.ins{display:flex;flex-direction:column;gap:8px;margin:0;padding:0;list-style:none}
+.ins li{display:flex;gap:10px;align-items:flex-start;font-size:14px;line-height:1.7}
+.ins li:before{content:"";flex:none;width:8px;height:8px;border-radius:50%;background:var(--accent);margin-top:9px}
+.ins li.w:before{background:var(--amber)}
+details.tb summary{cursor:pointer;color:var(--accent);font-size:13px;padding:6px 0}
+.tip{background:var(--soft);border-radius:var(--r-sm);padding:8px 12px;font-size:13px;margin-top:8px;min-height:38px}
+.f:has(.fchips)>label{position:static;display:block;background:none;padding:0 2px 2px;font-size:12.5px}
+.f:has(.fchips){margin-top:16px}
+
+/* ===== نسخه ۳ ===== */
+.top.brand{background-color:#04234b;background-image:linear-gradient(to left,rgba(4,35,75,.78) 0%,rgba(4,35,75,.38) 100%),var(--pat);background-size:cover;background-position:right center;box-shadow:0 6px 20px rgba(4,35,75,.25)}
+.hrow{display:flex;align-items:center;gap:10px}
+.blogo{width:54px;height:54px;border-radius:16px;flex:none;background:var(--logo) center/cover no-repeat,#fff;border:1.5px solid rgba(255,255,255,.4)}
+.hrow .ledger-pick{flex:1;width:auto;min-width:0}
+.srow{display:flex;gap:8px;align-items:center}
+.srow .search{flex:1;min-width:0}
+.sbtn{width:46px;height:46px;border-radius:999px;flex:none;background:var(--card);color:var(--accent);border:1px solid var(--line);display:grid;place-items:center;position:relative}
+.sbtn.act::after,.spill.act::after{content:"";position:absolute;top:4px;right:4px;width:10px;height:10px;border-radius:50%;background:#ffa000;border:2px solid var(--card)}
+.crow{display:flex;align-items:center;justify-content:space-between;gap:8px;color:var(--muted);font-size:13px;margin:12px 4px 6px}
+.spill{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;position:relative}
+.spill.act::after{top:-3px;right:-3px}
+.sfg{margin-top:14px}.sfg h4{margin:0 2px 8px;font-size:14px;color:var(--fg)}
+.lgp{width:76px;height:76px;border-radius:20px;border:1.5px solid var(--line);background:#fff center/contain no-repeat;flex:none}
+.invv{margin-top:12px;border-radius:var(--r);overflow:hidden;background:#fff;border:1px solid var(--line)}
+.inv-img{width:100%;height:auto;display:block}
+/* گزارش */
+.rdoc{margin-top:10px}
+.rhead{display:flex;flex-direction:column;gap:2px;margin-bottom:10px}.rhead b{font-size:17px;color:var(--accent)}.rhead small{color:var(--muted)}
+.rsum{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.rs{background:var(--card);border-radius:var(--r-sm);padding:9px 12px;min-width:0}.rs small{display:block;color:var(--muted);font-size:12px}.rs b{font-size:15px;display:block}.rs b i{font-style:normal;font-size:12px;font-weight:500}.rs em{font-style:normal;color:var(--muted);font-size:11.5px}
+.rs.st{background:var(--accent);color:#fff;grid-column:1/-1}.rs.st small,.rs.st em{color:rgba(255,255,255,.8)}.rs.st b{color:#fff!important}
+.rh4{margin:16px 2px 6px;font-size:14px;color:var(--accent)}
+.rtw{overflow-x:auto;border-radius:var(--r-sm);background:var(--card);margin-top:10px;-webkit-overflow-scrolling:touch}
+.rt{border-collapse:collapse;font-size:12.5px;min-width:100%;white-space:nowrap}
+.rt th{background:var(--accent);color:#fff;font-weight:500;padding:8px 10px;text-align:center}
+.rt td{padding:7px 10px;border-top:1px solid var(--line);vertical-align:top;white-space:pre;text-align:right}
+.rt td.n{text-align:center}.rt td[class=""]:nth-child(5){min-width:200px}
+.rt tfoot td{font-weight:700;background:var(--soft)}
+/* چاپ */
+#printroot{display:none}
+.phd{display:flex;align-items:center;gap:12px;border-bottom:3px solid #04234b;padding-bottom:8px;margin-bottom:10px}.phd b{font-size:18px;color:#04234b;display:block}.phd small{color:#555}.phl{width:54px;height:54px;border-radius:12px;border:1px solid #ddd;background:#fff center/contain no-repeat}.phdate{margin-right:auto}
+@media print{
+  @page{size:A4;margin:10mm}
+  html,body{height:auto!important;background:#fff!important;color:#000}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  body.printing>*:not(#printroot){display:none!important}
+  body.printing #printroot{display:block!important;direction:rtl}
+  #printroot .rt{font-size:9.5px}.rtw{overflow:visible}.rt th{background:#1b2b8c}
+  #printroot .rs{border:1px solid #ddd;background:#fff}.rs.st{background:#1b2b8c}
+}
+.top .chips .chip,.chips .chip{display:inline-flex;align-items:center;gap:5px}
+.blogo{background:var(--logo) center/cover no-repeat #04234b!important;border:0!important;border-radius:16px}
+.inv-img.land{margin-bottom:10px}
+.ivc{display:flex;gap:8px}
+@media print{#printroot.invland .inv-img{page-break-after:always;width:100%!important;height:auto;margin:0}#printroot.invland .inv-img:last-child{page-break-after:auto}}
+.ivc .chip{padding:9px 14px;border-radius:12px;border:1.5px solid #d9e2f2;background:#fff;color:#1b2b8c;font:inherit;font-size:13px;font-weight:600}.ivc .chip.on{background:#1b2b8c;color:#fff;border-color:#1b2b8c}
+
+.atts{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.att{width:72px;height:72px;border-radius:14px;overflow:hidden;background:var(--soft);border:1.5px solid var(--line);padding:0;display:grid;place-items:center}
+.att img{width:100%;height:100%;object-fit:cover;display:block}
+.att.add{border:2px dashed var(--accent);color:var(--accent);font-size:34px;font-weight:300;line-height:1;background:transparent}
+.attv{padding:14px;display:grid;place-items:center}.attv img{max-width:100%;max-height:70vh;border-radius:14px}
+.remb{display:flex;align-items:center;gap:10px;width:100%;margin:12px 0 0;padding:12px 14px;border-radius:var(--r);background:var(--amber-soft);color:var(--amber);text-align:right}
+.remb.over{background:var(--red-soft);color:var(--red)}.remb span{flex:1;display:flex;flex-direction:column}.remb small{opacity:.85;font-size:12px}
+.stin{width:84px;min-height:42px;padding:6px 10px;border-radius:12px;border:1.5px solid var(--line);background:var(--card);text-align:center}
+.stdf{display:block;font-size:12px;min-height:16px}
+.lockov{position:fixed;inset:0;z-index:99999;background:var(--head);display:grid;place-items:center;color:#fff}
+.lkbox{width:min(320px,88vw);text-align:center}.lkbox h2{margin:8px 0 18px;font-size:20px}
+.lklogo{display:block;width:72px;height:72px;margin:0 auto}
+.lkd{display:flex;gap:14px;justify-content:center;margin:6px 0}.lkd i{width:14px;height:14px;border-radius:50%;border:2px solid #fff;display:block}.lkd i.on{background:#ffa000;border-color:#ffa000}
+.lkm{min-height:24px;margin:10px 0;font-size:13px;opacity:.9}.lkm.bad{color:#ffb3bd}
+.lkp{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;direction:ltr}
+.lkk{height:62px;border-radius:50%;background:rgba(255,255,255,.12);color:#fff;font-size:24px}
+.bcv{width:100%;max-height:50vh;border-radius:14px;background:#000;object-fit:cover}
+
+.bcbox{position:relative}.bcl{position:absolute;left:8%;right:8%;top:50%;height:2px;background:#ff3b30;box-shadow:0 0 8px #ff3b30;animation:bcl 1.6s ease-in-out infinite alternate;pointer-events:none}@keyframes bcl{from{top:35%}to{top:65%}}
+.pchips{margin:-4px 0 8px}.pchips small.mut{display:block;margin-bottom:6px}
+
+/* افزوده‌های اپ ثبت سفارشات */
+.top.brand .hrow b{font-size:17px}
+.lg{display:flex;align-items:center;gap:10px}
+.lg img{width:44px;height:44px;border-radius:12px;background:#fff;padding:3px}
+.net{display:inline-block;padding:3px 10px;border-radius:999px;font-size:12px;background:rgba(255,255,255,.18);color:#fff}
+.net.off{background:#ffa000;color:#3a2500}
+.pgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.pc{background:var(--card);border-radius:var(--r);overflow:hidden;display:flex;flex-direction:column;text-align:right}
+.pc .im{aspect-ratio:1/1;background:var(--soft) center/cover no-repeat;display:grid;place-items:center;color:var(--muted)}
+.pc .bd{padding:8px 10px 10px;display:flex;flex-direction:column;gap:4px;flex:1}
+.pc b{font-size:13.5px;line-height:1.5;min-height:40px;display:block}
+.pc .pr2{color:var(--accent);font-weight:700;font-size:14px}
+.pc .st2{font-size:12px;color:var(--muted)}
+.pc .st2.low{color:var(--red)}
+.qb{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-top:4px}
+.qb button{width:36px;height:36px;border-radius:12px;background:var(--accent);color:#fff;display:grid;place-items:center;font-size:20px;font-weight:700}
+.qb button.mn{background:var(--soft);color:var(--accent)}
+.qb span{flex:1;text-align:center;font-weight:700}
+.qb input{flex:1;min-width:0;width:100%;text-align:center;border:1.5px solid var(--line);border-radius:10px;background:var(--bg);padding:6px 2px;font-weight:700}
+.us{display:flex;gap:4px;margin-top:2px}
+.us button{flex:1;padding:4px 0;border-radius:10px;font-size:12px;background:var(--bg);border:1px solid var(--line);color:var(--fg)}
+.us button.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.cartbar{position:fixed;left:0;right:0;bottom:calc(74px + env(safe-area-inset-bottom,0px));max-width:560px;margin:0 auto;padding:0 14px;z-index:25;pointer-events:none}
+.cartbar button{pointer-events:auto;width:100%;display:flex;justify-content:space-between;align-items:center;background:var(--accent);color:#fff;border-radius:16px;padding:12px 16px;font-weight:700;box-shadow:0 6px 20px rgba(4,35,75,.3)}
+.pimg{width:100%;aspect-ratio:4/3;border-radius:var(--r);background:var(--soft) center/cover no-repeat;margin-top:12px}
+.bdg{display:inline-block;min-width:18px;padding:0 6px;border-radius:999px;background:#ffa000;color:#3a2500;font-size:11px;line-height:18px;margin-right:4px}
+.pill.new{background:var(--amber-soft);color:var(--amber)}
+.pill.confirmed{background:var(--soft);color:var(--accent)}
+.pill.invoiced,.pill.shipped{background:var(--green-soft);color:var(--green)}
+.pill.cancel{background:var(--red-soft);color:var(--red)}
+.pill.wait{background:var(--amber-soft);color:var(--amber)}
+.loginw{max-width:420px;margin:0 auto;padding:40px 18px}
+.loginw .lg0{text-align:center;margin-bottom:18px}
+.loginw .lg0 img{width:96px;height:96px;border-radius:24px;background:#fff;box-shadow:0 8px 24px rgba(4,35,75,.18)}
+.loginw h1{font-size:20px;margin:12px 0 2px}
+.it2{display:flex;gap:10px;align-items:center;background:var(--card);border-radius:var(--r-sm);padding:10px;margin-top:8px}
+.it2 .im{width:48px;height:48px;border-radius:12px;background:var(--soft) center/cover no-repeat;flex:none}
+.it2 .tx{flex:1;min-width:0;font-size:13px}
+.it2 .tx b{display:block;font-size:13.5px}
+.it2 .tx small{color:var(--muted)}
+.it2 .q{width:92px;flex:none}
+.sum2 .line{display:flex;justify-content:space-between;padding:4px 0}
+.fu{background:var(--amber-soft);color:var(--amber);border-radius:var(--r-sm);padding:10px 12px;margin-top:12px;font-size:13px}
+.hdr2{display:flex;justify-content:space-between;align-items:center;margin-top:14px}
+.hdr2 h3{margin:0;font-size:15px}
+.smallbtn{padding:6px 12px;border-radius:999px;background:var(--soft);color:var(--accent);font-size:13px}
+.wrap{padding-bottom:150px}
+nav.bar button{position:relative;font-size:10.5px;padding:6px 0}
+nav.bar button span{white-space:nowrap}
+nav.bar .bdg{position:absolute;top:0;left:50%;margin:0;transform:translateX(6px);min-width:16px;line-height:16px;padding:0 4px;text-align:center;font-style:normal}
+.pc .im{aspect-ratio:4/3}
+.cartbar{bottom:calc(80px + env(safe-area-inset-bottom,0px))}
+.hm{width:42px;height:42px;border-radius:14px;background:rgba(255,255,255,.14);color:#fff;display:grid;place-items:center;flex:none}
+.hm:active{background:#fff;color:var(--accent)}
+.pc .im{aspect-ratio:4/5}
+.pimg{aspect-ratio:4/5;max-height:62vh;width:auto;margin-left:auto;margin-right:auto;max-width:100%}
+.it2 .im{height:60px;width:48px}
+/* ---- انیمیشن‌ها ---- */
+@keyframes vin{from{opacity:0;transform:translateY(14px) scale(.985)}to{opacity:1;transform:none}}
+@keyframes vpop{0%{transform:scale(1)}40%{transform:scale(1.14)}100%{transform:scale(1)}}
+@keyframes vslide{from{transform:translateX(-28px);opacity:0}to{transform:none;opacity:1}}
+@keyframes vsheet{from{transform:translateY(40px);opacity:.4}to{transform:none;opacity:1}}
+@keyframes vcart{from{transform:translateY(30px);opacity:0}to{transform:none;opacity:1}}
+@keyframes vshine{from{background-position:100% 0}to{background-position:-100% 0}}
+.vin>*{animation:vin .34s cubic-bezier(.2,.8,.2,1) both}
+.vin>*:nth-child(2){animation-delay:.04s}.vin>*:nth-child(3){animation-delay:.08s}
+.vin .pgrid .pc,.vin .list>.row{animation:vin .36s cubic-bezier(.2,.8,.2,1) both}
+.vin .pgrid .pc:nth-child(2){animation-delay:.04s}.vin .pgrid .pc:nth-child(3){animation-delay:.08s}.vin .pgrid .pc:nth-child(4){animation-delay:.12s}.vin .pgrid .pc:nth-child(n+5){animation-delay:.16s}
+.page{animation:vslide .3s cubic-bezier(.2,.8,.2,1)}
+.sheet{animation:vsheet .3s cubic-bezier(.2,.8,.2,1)}
+.cartbar{animation:vcart .35s cubic-bezier(.2,.8,.2,1)}
+.tap{transition:transform .12s ease,background-color .2s,color .2s,box-shadow .2s}
+.tap:active{transform:scale(.94)}
+.pc .im.tap:active{transform:scale(.98)}
+.qb button:active{transform:scale(.8)}
+.pop{animation:vpop .32s ease}
+nav.bar button svg{transition:transform .25s cubic-bezier(.3,1.6,.5,1)}
+nav.bar button.on svg{transform:translateY(-2px) scale(1.15)}
+nav.bar button{transition:background-color .25s,color .25s}
+.toast{animation:vin .25s ease}
+.btn{transition:transform .12s,background-color .2s,box-shadow .2s}
+.btn:active{transform:scale(.97)}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+a.btn{text-decoration:none}a.smallbtn{text-decoration:none}
+
+/* ---- راهنمای من ---- */
+#asfab{position:fixed;left:max(12px,env(safe-area-inset-left,0px));bottom:calc(88px + env(safe-area-inset-bottom,0px));z-index:51;height:52px;width:150px;padding:0;border-radius:26px;background:linear-gradient(135deg,var(--accent),#7a5cff);color:#fff;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 8px 22px rgba(30,40,140,.38);animation:asin .6s cubic-bezier(.2,.9,.25,1);transition:width .7s cubic-bezier(.65,0,.25,1),gap .5s ease .1s,bottom .3s,transform .25s,opacity .25s;overflow:visible;font-size:13.5px;font-weight:600}
+#asfab::after{content:"";position:absolute;inset:-4px;border-radius:32px;border:2px solid var(--accent);opacity:0;animation:aspulse 2.8s ease-out infinite;pointer-events:none}
+#asfab .asic{width:28px;height:28px;flex:none;display:grid;place-items:center;animation:asrot 5s cubic-bezier(.6,0,.3,1) infinite}
+#asfab .asic svg{display:block;width:28px;height:28px;margin:0}
+#asfab .aslb{flex:none;max-width:90px;overflow:hidden;white-space:nowrap;transition:max-width .6s cubic-bezier(.65,0,.25,1),opacity .3s ease}
+#asfab.short{width:52px;gap:0}#asfab.short .aslb{max-width:0;opacity:0}
+@keyframes asrot{0%{transform:rotate(0)}55%,100%{transform:rotate(360deg)}}
+body:has(.cartbar) #asfab{bottom:calc(150px + env(safe-area-inset-bottom,0px))}
+body.aso #asfab,#sheets:has(.sw)~#asfab{opacity:0;pointer-events:none;transform:scale(.6)}
+@keyframes asin{from{opacity:0;transform:translateY(30px) scale(.6)}to{opacity:1;transform:none}}
+@keyframes aspulse{0%{opacity:.6;transform:scale(.95)}100%{opacity:0;transform:scale(1.25)}}
+#asst{position:fixed;inset:0;z-index:60;display:flex;flex-direction:column;justify-content:flex-end;max-width:560px;margin:0 auto}
+.asbk{position:absolute;inset:0;background:rgba(8,10,30,.5);animation:fade .25s}
+.aspn{position:relative;height:88%;background:var(--bg);border-radius:26px 26px 0 0;display:flex;flex-direction:column;overflow:hidden;animation:asup .42s cubic-bezier(.2,.9,.25,1)}
+#asst.asout .aspn{animation:asdn .26s ease-in forwards}#asst.asout .asbk{animation:fadeo .26s forwards}
+@keyframes asup{from{transform:translateY(100%)}to{transform:none}}@keyframes asdn{to{transform:translateY(100%)}}@keyframes fadeo{to{opacity:0}}
+.ashd{background:var(--head);color:#fff;padding:14px 14px 14px 16px;display:flex;align-items:center;gap:12px}
+.asav{width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.16);display:grid;place-items:center;animation:asfl 3s ease-in-out infinite}
+@keyframes asfl{50%{transform:translateY(-3px)}}
+.ast{flex:1;display:flex;flex-direction:column;line-height:1.5}.ast b{font-size:17px}.ast small{opacity:.85;display:flex;align-items:center;gap:6px}
+.asdot{width:9px;height:9px;border-radius:50%;background:#3ddc84;box-shadow:0 0 0 0 rgba(61,220,132,.7);animation:asdt 1.8s infinite}
+@keyframes asdt{70%{box-shadow:0 0 0 8px rgba(61,220,132,0)}100%{box-shadow:0 0 0 0 rgba(61,220,132,0)}}
+.asmsg{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px}
+.asb{max-width:90%;padding:10px 13px;border-radius:18px;line-height:1.8;font-size:14.5px;animation:asm .38s cubic-bezier(.2,.9,.25,1)}
+.asb.bot{align-self:flex-start;background:var(--card);border-top-right-radius:6px}
+.asb.user{align-self:flex-end;background:var(--accent);color:#fff;border-top-left-radius:6px}
+@keyframes asm{from{opacity:0;transform:translateY(12px) scale(.96)}to{opacity:1;transform:none}}
+.astyping{display:flex;gap:5px;padding:14px 16px}.astyping i{width:8px;height:8px;border-radius:50%;background:var(--muted);animation:asty 1s infinite}.astyping i:nth-child(2){animation-delay:.15s}.astyping i:nth-child(3){animation-delay:.3s}
+@keyframes asty{0%,60%,100%{transform:translateY(0);opacity:.5}30%{transform:translateY(-6px);opacity:1}}
+.as-t{display:block;font-size:15.5px;margin-bottom:4px}.as-p{margin-top:4px;color:var(--muted);font-size:13.5px}
+.as-s{margin:6px 0 0;padding:0 20px 0 0}.as-s li{margin:6px 0;animation:asm .4s both}.as-s li:nth-child(2){animation-delay:.08s}.as-s li:nth-child(3){animation-delay:.16s}.as-s li:nth-child(4){animation-delay:.24s}.as-s li:nth-child(5){animation-delay:.32s}.as-s li:nth-child(6){animation-delay:.4s}
+.as-go{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.as-go button,.as-go a{background:var(--accent);color:#fff;border-radius:999px;padding:8px 14px;font-size:13px;text-decoration:none}
+.as-go a{background:var(--soft);color:var(--accent)}
+.aschips{display:flex;gap:8px;overflow-x:auto;padding:6px 12px 8px;scrollbar-width:none}.aschips::-webkit-scrollbar{display:none}
+.aschips button{flex:none;background:var(--soft);color:var(--accent);border-radius:999px;padding:8px 14px;font-size:13px;white-space:nowrap;animation:asm .35s both}
+.asin{display:flex;gap:8px;padding:8px 12px calc(10px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line);background:var(--card)}
+.asin input{flex:1;min-width:0;border:1.5px solid var(--line);border-radius:999px;background:var(--bg);padding:12px 16px;font-size:15px}
+.asin button{width:48px;height:48px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;flex:none;transition:transform .15s}.asin button:active{transform:scale(.88)}
+.asin button svg{transform:scaleX(-1)}
+
+#printroot{display:none}
+.lbs{display:flex;flex-wrap:wrap;direction:rtl}
+.lb{box-sizing:border-box;overflow:hidden;padding:1.2mm 1.6mm;display:flex;flex-direction:column;align-items:center;justify-content:space-between;text-align:center;background:#fff;color:#000;page-break-inside:avoid;break-inside:avoid}
+.lbs:not(.a4) .lb{page-break-after:always;break-after:page}
+.lb .ln{font-weight:600;line-height:1.25;max-height:2.6em;overflow:hidden;width:100%}
+.lb .lp{font-weight:800}
+.lb .lbc{width:92%}.lb .lbc svg{width:100%;height:100%;display:block;shape-rendering:crispEdges}.lb .lbc rect{fill:#000}
+.lb .ld{letter-spacing:.06em;direction:ltr;font-family:monospace}
+@media print{.lbs.a4 .lb{outline:0}}
+.tbl{width:100%;border-collapse:collapse;font-size:13px}.tbl th,.tbl td{padding:8px 6px;border-bottom:1px solid var(--line,#e5e9f0);text-align:center}.tbl td:first-child,.tbl th:first-child{text-align:right}
+.top{padding-top:calc(14px + env(safe-area-inset-top,0px))}</style></head><body><div id="app"><main id="main"></main><nav class="bar" id="nav" aria-label="بخش‌های اصلی"></nav></div><div id="pages"></div><div id="sheets"></div><script>
+/* ساخت فایل اکسل (xlsx) بدون هیچ کتابخانه‌ای: zip بدون فشرده‌سازی + XML */
+(function (root) {
+'use strict';
+const enc = new TextEncoder();
+const CRC = (() => { const t = []; for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
+function crc32(b) { let c = 0xFFFFFFFF; for (let i = 0; i < b.length; i++) c = CRC[(c ^ b[i]) & 255] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0; }
+function zip(files) { // files: [[name, string]]
+  const parts = [], cen = []; let off = 0;
+  const d = new Date(), dt = ((d.getHours() << 11) | (d.getMinutes() << 5) | (d.getSeconds() >> 1)) & 0xFFFF, dd = (((d.getFullYear() - 1980) << 9) | ((d.getMonth() + 1) << 5) | d.getDate()) & 0xFFFF;
+  const u16 = (v, a) => { a.push(v & 255, (v >> 8) & 255); }, u32 = (v, a) => { a.push(v & 255, (v >>> 8) & 255, (v >>> 16) & 255, (v >>> 24) & 255); };
+  for (const [name, text] of files) {
+    const nb = enc.encode(name), data = enc.encode(text), crc = crc32(data);
+    const h = [0x50, 0x4b, 3, 4]; u16(20, h); u16(0x0800, h); u16(0, h); u16(dt, h); u16(dd, h); u32(crc, h); u32(data.length, h); u32(data.length, h); u16(nb.length, h); u16(0, h);
+    parts.push(new Uint8Array(h), nb, data);
+    const c = [0x50, 0x4b, 1, 2]; u16(20, c); u16(20, c); u16(0x0800, c); u16(0, c); u16(dt, c); u16(dd, c); u32(crc, c); u32(data.length, c); u32(data.length, c); u16(nb.length, c); u16(0, c); u16(0, c); u16(0, c); u16(0, c); u32(0, c); u32(off, c);
+    cen.push(new Uint8Array(c), nb);
+    off += h.length + nb.length + data.length;
+  }
+  let cl = 0; cen.forEach(x => { cl += x.length; });
+  const e = [0x50, 0x4b, 5, 6]; u16(0, e); u16(0, e); u16(files.length, e); u16(files.length, e); u32(cl, e); u32(off, e); u16(0, e);
+  const all = parts.concat(cen, [new Uint8Array(e)]); let n = 0; all.forEach(x => { n += x.length; });
+  const out = new Uint8Array(n); let p = 0; all.forEach(x => { out.set(x, p); p += x.length; });
+  return out;
+}
+const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])).replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f]/g, '');
+const colName = i => { let s = ''; i++; while (i > 0) { const m = (i - 1) % 26; s = String.fromCharCode(65 + m) + s; i = Math.floor((i - 1) / 26); } return s; };
+
+/* سبک‌ها: شماره‌ی xf */
+const ST = { text: 2, money: 3, moneyPos: 4, moneyNeg: 5, num: 6, title: 7, sumL: 8, sumV: 9, footT: 10, footM: 11, sub: 12, head: 1, textPos: 13, textNeg: 14, sumVpos: 15, sumVneg: 16 };
+const STYLES = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">' +
+  '<numFmts count="1"><numFmt numFmtId="164" formatCode="#,##0.##"/></numFmts>' +
+  '<fonts count="6"><font><sz val="11"/><name val="Tahoma"/></font><font><b/><sz val="11"/><color rgb="FFFFFFFF"/><name val="Tahoma"/></font><font><b/><sz val="11"/><name val="Tahoma"/></font><font><sz val="11"/><color rgb="FF13803C"/><name val="Tahoma"/></font><font><sz val="11"/><color rgb="FFB3122B"/><name val="Tahoma"/></font><font><b/><sz val="14"/><color rgb="FF1B2B8C"/><name val="Tahoma"/></font></fonts>' +
+  '<fills count="5"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FF1B2B8C"/><bgColor indexed="64"/></patternFill></fill><fill><patternFill patternType="solid"><fgColor rgb="FFEEF1F8"/><bgColor indexed="64"/></patternFill></fill><fill><patternFill patternType="solid"><fgColor rgb="FFE7EBFA"/><bgColor indexed="64"/></patternFill></fill></fills>' +
+  '<borders count="2"><border><left/><right/><top/><bottom/><diagonal/></border><border><left style="thin"><color rgb="FFD0D6E8"/></left><right style="thin"><color rgb="FFD0D6E8"/></right><top style="thin"><color rgb="FFD0D6E8"/></top><bottom style="thin"><color rgb="FFD0D6E8"/></bottom><diagonal/></border></borders>' +
+  '<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>' +
+  '<cellXfs count="17">' +
+  '<xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>' +
+  '<xf numFmtId="0" fontId="1" fillId="2" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center" wrapText="1" readingOrder="2"/></xf>' +
+  '<xf numFmtId="0" fontId="0" fillId="0" borderId="1" xfId="0" applyBorder="1" applyAlignment="1"><alignment horizontal="right" vertical="center" wrapText="1" readingOrder="2"/></xf>' +
+  '<xf numFmtId="3" fontId="0" fillId="0" borderId="1" xfId="0" applyNumberFormat="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>' +
+  '<xf numFmtId="3" fontId="3" fillId="0" borderId="1" xfId="0" applyNumberFormat="1" applyFont="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>' +
+  '<xf numFmtId="3" fontId="4" fillId="0" borderId="1" xfId="0" applyNumberFormat="1" applyFont="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>' +
+  '<xf numFmtId="164" fontId="0" fillId="0" borderId="1" xfId="0" applyNumberFormat="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>' +
+  '<xf numFmtId="0" fontId="5" fillId="0" borderId="0" xfId="0" applyFont="1" applyAlignment="1"><alignment horizontal="right" vertical="center" readingOrder="2"/></xf>' +
+  '<xf numFmtId="0" fontId="2" fillId="3" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="right" vertical="center" readingOrder="2"/></xf>' +
+  '<xf numFmtId="3" fontId="2" fillId="4" borderId="1" xfId="0" applyNumberFormat="1" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>' +
+  '<xf numFmtId="0" fontId="2" fillId="3" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center" wrapText="1" readingOrder="2"/></xf>' +
+  '<xf numFmtId="3" fontId="2" fillId="3" borderId="1" xfId="0" applyNumberFormat="1" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>' +
+  '<xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0" applyAlignment="1"><alignment horizontal="right" vertical="center" readingOrder="2"/></xf>' +
+  '<xf numFmtId="0" fontId="3" fillId="0" borderId="1" xfId="0" applyFont="1" applyBorder="1" applyAlignment="1"><alignment horizontal="right" vertical="center" wrapText="1" readingOrder="2"/></xf>' +
+  '<xf numFmtId="0" fontId="4" fillId="0" borderId="1" xfId="0" applyFont="1" applyBorder="1" applyAlignment="1"><alignment horizontal="right" vertical="center" wrapText="1" readingOrder="2"/></xf>' +
+  '<xf numFmtId="3" fontId="3" fillId="4" borderId="1" xfId="0" applyNumberFormat="1" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>' +
+  '<xf numFmtId="3" fontId="4" fillId="4" borderId="1" xfId="0" applyNumberFormat="1" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>' +
+  '</cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>';
+
+function sheetXml(m, sh, first) {
+  const rows = []; let r = 0; const merges = [];
+  const nc = sh.cols.length;
+  const cell = (c, v, st) => {
+    const ref = colName(c) + (r + 1);
+    if (v === '' || v == null) return '<c r="' + ref + '" s="' + st + '"/>';
+    if (typeof v === 'number' && isFinite(v)) return '<c r="' + ref + '" s="' + st + '"><v>' + v + '</v></c>';
+    return '<c r="' + ref + '" s="' + st + '" t="inlineStr"><is><t xml:space="preserve">' + esc(v) + '</t></is></c>';
+  };
+  const addRow = (cells, ht) => { rows.push('<row r="' + (r + 1) + '"' + (ht ? ' ht="' + ht + '" customHeight="1"' : '') + '>' + cells.join('') + '</row>'); r++; };
+  const wide = Math.max(nc, 4);
+  addRow([cell(0, m.title + (m.party && m.party.name ? '' : ''), ST.title)], 26); merges.push('A' + r + ':' + colName(wide - 1) + r);
+  if (m.subtitle) { addRow([cell(0, m.subtitle, ST.sub)]); merges.push('A' + r + ':' + colName(wide - 1) + r); }
+  if (first && m.party) { const t = [m.party.name, m.party.mobile, m.party.address].filter(Boolean).join(' • '); addRow([cell(0, t, ST.sub)]); merges.push('A' + r + ':' + colName(wide - 1) + r); }
+  if (first && m.biz) { addRow([cell(0, m.biz, ST.sub)]); merges.push('A' + r + ':' + colName(wide - 1) + r); }
+  if (first && m.summary && m.summary.length) {
+    addRow([]);
+    for (const s of m.summary) {
+      const v = s.kind === 'bal' ? Math.abs(s.v) : s.v, st = s.kind === 'bal' ? (s.v > 0.5 ? ST.sumVpos : s.v < -0.5 ? ST.sumVneg : ST.sumV) : ST.sumV;
+      const extra = s.kind === 'bal' ? (Math.abs(s.v) < 1 ? 'تسویه' : s.v > 0 ? 'طلبکارم' : 'بدهکارم') : (s.sub || '');
+      addRow([cell(0, s.l, ST.sumL), cell(1, '', ST.sumL), cell(2, '', ST.sumL), cell(3, v, st), cell(4, '', st), cell(5, extra, ST.sumL)]);
+      merges.push('A' + r + ':C' + r, 'D' + r + ':E' + r);
+    }
+    if (m.note) { addRow([cell(0, m.note, ST.sub)]); merges.push('A' + r + ':' + colName(wide - 1) + r); }
+  }
+  addRow([]);
+  const headRow = r + 1;
+  addRow(sh.cols.map((c, i) => cell(i, c.h, ST.head)), 30);
+  sh.rows.forEach((row, k) => {
+    const tone = sh.tones && sh.tones[k];
+    const lines = Math.max(1, ...row.map(v => typeof v === 'string' ? v.split('\n').length : 1));
+    addRow(row.map((v, i) => {
+      const c = sh.cols[i];
+      if (c.t === 'money') return cell(i, v, tone === 'pos' ? ST.moneyPos : tone === 'neg' ? ST.moneyNeg : ST.money);
+      if (c.t === 'num') return cell(i, v, ST.num);
+      return cell(i, v, ST.text);
+    }), lines > 1 ? Math.min(15 * lines + 4, 200) : 0);
+  });
+  if (sh.foot) addRow(sh.foot.map((v, i) => cell(i, v, sh.cols[i].t === 'money' ? ST.footM : ST.footT)));
+  const cols = '<cols>' + sh.cols.map((c, i) => '<col min="' + (i + 1) + '" max="' + (i + 1) + '" width="' + (c.w || 14) + '" customWidth="1"/>').join('') + '</cols>';
+  return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">' +
+    '<sheetViews><sheetView rightToLeft="1" workbookViewId="0"' + (first ? ' tabSelected="1"' : '') + '><pane ySplit="' + headRow + '" topLeftCell="A' + (headRow + 1) + '" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews>' +
+    '<sheetFormatPr defaultRowHeight="18"/>' + cols + '<sheetData>' + rows.join('') + '</sheetData>' +
+    '<mergeCells count="' + merges.length + '">' + merges.map(x => '<mergeCell ref="' + x + '"/>').join('') + '</mergeCells>' +
+    '<pageMargins left="0.4" right="0.4" top="0.5" bottom="0.5" header="0.3" footer="0.3"/><pageSetup orientation="landscape" fitToHeight="0"/></worksheet>';
+}
+function build(m) {
+  const names = m.sheets.map((s, i) => String(s.name || ('Sheet' + (i + 1))).replace(/[\[\]:*?\/\\]/g, ' ').slice(0, 31));
+  const files = [
+    ['[Content_Types].xml', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>' + names.map((_, i) => '<Override PartName="/xl/worksheets/sheet' + (i + 1) + '.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>').join('') + '</Types>'],
+    ['_rels/.rels', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>'],
+    ['xl/workbook.xml', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><bookViews><workbookView/></bookViews><sheets>' + names.map((n, i) => '<sheet name="' + esc(n) + '" sheetId="' + (i + 1) + '" r:id="rId' + (i + 1) + '"/>').join('') + '</sheets></workbook>'],
+    ['xl/_rels/workbook.xml.rels', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' + names.map((_, i) => '<Relationship Id="rId' + (i + 1) + '" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet' + (i + 1) + '.xml"/>').join('') + '<Relationship Id="rId' + (names.length + 1) + '" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>'],
+    ['xl/styles.xml', STYLES]
+  ];
+  m.sheets.forEach((s, i) => files.push(['xl/worksheets/sheet' + (i + 1) + '.xml', sheetXml(m, s, i === 0)]));
+  return zip(files);
+}
+const api = { build, zip, crc32 };
+if (typeof module !== 'undefined' && module.exports) module.exports = api; else root.XL = api;
+})(typeof window !== 'undefined' ? window : globalThis);
+
+document.documentElement.dir = 'rtl'; document.documentElement.lang = 'fa';
+const $ = (s, r) => (r || document).querySelector(s);
+const D = '۰۱۲۳۴۵۶۷۸۹';
+const fa = s => String(s).replace(/\d/g, d => D[d]);
+const en = s => String(s).replace(/[۰-۹]/g, c => D.indexOf(c)).replace(/[٠-٩]/g, c => '٠١٢٣٤٥٦٧٨٩'.indexOf(c)).replace(/٫/g, '.').replace(/[٬,،\s]/g, '');
+const num = s => { const v = parseFloat(en(s)); return isFinite(v) ? v : 0; };
+const grp = n => String(Math.abs(Math.round(n))).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const qf = n => fa(String(Math.round(n * 100) / 100));
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+const pdf = new Intl.DateTimeFormat('fa-IR-u-ca-persian', { year: 'numeric', month: '2-digit', day: '2-digit' });
+const tmf = new Intl.DateTimeFormat('fa-IR', { hour: '2-digit', minute: '2-digit' });
+const fdate = ts => pdf.format(ts), ftime = ts => tmf.format(ts);
+const A = {}, I = {}, C = {}, chipH = {};
+document.addEventListener('click', e => { const t = e.target.closest('[data-a]'); if (!t) return; const f = A[t.dataset.a]; if (f) { e.preventDefault(); f(t, e); } });
+document.addEventListener('input', e => { const t = e.target.closest('[data-in]'); if (t && I[t.dataset.in]) I[t.dataset.in](t, e); });
+document.addEventListener('change', e => { const t = e.target.closest('[data-ch]'); if (t && C[t.dataset.ch]) C[t.dataset.ch](t, e); });
+let toastT;
+function toast(msg, err) { const old = $('.toast'); if (old) old.remove(); const t = document.createElement('div'); t.className = 'toast' + (err ? ' err' : ''); t.textContent = msg; document.body.appendChild(t); clearTimeout(toastT); toastT = setTimeout(() => t.remove(), err ? 3800 : 2200); }
+const pages = [], sheets = [];
+function openPage(o) {
+  const el = document.createElement('div'); el.className = 'page ' + (o.cls || '');
+  el.innerHTML = '<div class="phead"><button class="hbtn tap" data-a="pclose" aria-label="بازگشت">' + ico('back') + '</button><h2>' + (o.title || '') + '</h2><div class="hr">' + (o.headRight || '') + '</div></div><div class="pbody">' + (o.body || '') + '</div>' + (o.foot ? '<div class="pfoot">' + o.foot + '</div>' : '');
+  $('#pages').appendChild(el); pages.push(el);
+  return { el, body: el.querySelector('.pbody'), foot: el.querySelector('.pfoot'), close() { closePage(el); } };
+}
+function closePage(el) { el = el || pages[pages.length - 1]; if (!el) return; el.remove(); const i = pages.indexOf(el); if (i >= 0) pages.splice(i, 1); render(); }
+function openSheet(html) { const w = document.createElement('div'); w.className = 'sw'; w.innerHTML = '<div class="sbk" data-a="sclose"></div><div class="sheet"><div class="grab"></div>' + html + '</div>'; $('#sheets').appendChild(w); sheets.push(w); return w; }
+function closeSheet(w) { w = w || sheets[sheets.length - 1]; if (!w) return; w.remove(); const i = sheets.indexOf(w); if (i >= 0) sheets.splice(i, 1); }
+function ask(msg, label, fn, danger) { const w = openSheet('<h3 class="st">' + msg + '</h3><div class="pr"><button class="btn ' + (danger ? 'danger' : '') + ' tap" data-a="ask-ok">' + label + '</button><button class="btn ghost tap" data-a="sclose">انصراف</button></div>'); w._ok = fn; }
+A.pclose = () => closePage(); A.sclose = () => closeSheet();
+A['ask-ok'] = t => { const w = t.closest('.sw'); const f = w._ok; closeSheet(w); if (f) f(); };
+A.chip = t => { const n = t.dataset.n; t.parentNode.querySelectorAll('.chip').forEach(c => c.classList.toggle('on', c === t)); if (chipH[n]) chipH[n](t.dataset.v); };
+const rowH = o => '<button class="row tap" data-a="' + o.a + '" data-id="' + esc(o.id || '') + '"><span class="av ' + (o.av || '') + '">' + ico(o.icon || 'user', 22) + '</span><span class="tx"><b>' + esc(o.title) + '</b>' + (o.sub ? '<small>' + esc(o.sub) + '</small>' : '') + '</span>' + (o.end ? '<span class="end">' + o.end + '</span>' : '') + '</button>';
+const empty = (t, s) => '<div class="empty"><b>' + t + '</b>' + (s || '') + '</div>';
+const field = (label, id, val, o) => { o = o || {}; return '<div class="f"><label for="' + id + '">' + label + '</label><input id="' + id + '" value="' + esc(val == null ? '' : val) + '" ' + (o.attr || '') + (o.ph ? ' placeholder="' + esc(o.ph) + '"' : '') + (o.type ? ' type="' + o.type + '"' : '') + ' autocomplete="off"></div>'; };
+const area = (label, id, val, attr) => '<div class="f"><label for="' + id + '">' + label + '</label><textarea id="' + id + '" ' + (attr || '') + '>' + esc(val || '') + '</textarea></div>';
+const chipsH = (name, opts, val) => '<div class="fchips">' + opts.map(o => '<button type="button" class="chip tap' + (o[0] === val ? ' on' : '') + '" data-a="chip" data-n="' + name + '" data-v="' + esc(o[0]) + '">' + o[1] + '</button>').join('') + '</div>';
+
+const IC = {
+  home: '<path d="M3 11l9-8 9 8"/><path d="M5 9.5V20h14V9.5"/>',
+  gift: '<rect x="3" y="8" width="18" height="4" rx="1"/><path d="M5 12v8h14v-8M12 8v12M12 8c-2-4-6-3-4.5-.5.7 1 4.5.5 4.5.5zM12 8c2-4 6-3 4.5-.5-.7 1-4.5.5-4.5.5z"/>',
+  box: '<path d="M3 7h18v4H3z"/><path d="M5 11v9h14v-9"/><path d="M10 15h4"/>',
+  bank: '<path d="M3 9l9-5 9 5"/><path d="M5 10v8M9.5 10v8M14.5 10v8M19 10v8"/><path d="M3 20h18"/>',
+  wallet: '<path d="M4 7h14a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2h11"/><circle cx="16" cy="13.5" r="1.2"/>',
+  menu: '<path d="M4 7h16M4 12h16M4 17h16"/>',
+  plus: '<path d="M12 5v14M5 12h14"/>',
+  search: '<circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4-4"/>',
+  back: '<path d="M5 12h14M13 6l6 6-6 6"/>',
+  close: '<path d="M6 6l12 12M18 6L6 18"/>',
+  trash: '<path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/>',
+  user: '<circle cx="12" cy="8" r="4"/><path d="M4 20c1-4 4-6 8-6s7 2 8 6"/>',
+  users: '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 19c.7-3.4 3.2-5 6.5-5s5.8 1.6 6.5 5"/><circle cx="17" cy="9" r="2.5"/><path d="M17 14c2.5 0 4 1.4 4.5 4"/>',
+  check: '<path d="M5 12.5l4.5 4.5L19 7"/>',
+  edit: '<path d="M4 20h4L19 9l-4-4L4 16z"/>',
+  chart: '<path d="M4 20V5M4 20h16"/><path d="M8 15l3-4 3 2 4-6"/>',
+  gear: '<circle cx="12" cy="12" r="3"/><path d="M12 3v2.5M12 18.5V21M3 12h2.5M18.5 12H21M5.6 5.6l1.8 1.8M16.6 16.6l1.8 1.8M18.4 5.6l-1.8 1.8M7.4 16.6l-1.8 1.8"/>',
+  calendar: '<rect x="4" y="5" width="16" height="15" rx="3"/><path d="M4 10h16M9 3v4M15 3v4"/>',
+  book: '<path d="M5 4h11a3 3 0 013 3v13H8a3 3 0 01-3-3z"/><path d="M5 17a3 3 0 013-3h11"/>',
+  down: '<path d="M6 9l6 6 6-6"/>',
+  left: '<path d="M15 6l-6 6 6 6"/>',
+  copy: '<rect x="8" y="8" width="12" height="12" rx="2.5"/><path d="M16 8V6a2 2 0 00-2-2H6a2 2 0 00-2 2v8a2 2 0 002 2h2"/>',
+  brief: '<rect x="3" y="7" width="18" height="12" rx="3"/><path d="M9 7V5h6v2M3 13h18"/>',
+  inn: '<path d="M12 4v12M7 11l5 5 5-5M5 20h14"/>',
+  out: '<path d="M12 16V4M7 9l5-5 5 5M5 20h14"/>',
+  tag: '<path d="M3 12V4h8l10 10-8 8z"/><circle cx="7.5" cy="8.5" r="1.3"/>',
+  pin: '<path d="M12 21s7-6.2 7-11a7 7 0 00-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/>',
+  route: '<circle cx="6" cy="18" r="2.2"/><circle cx="18" cy="6" r="2.2"/><path d="M8 18h6a3 3 0 000-6h-4a3 3 0 010-6h6"/>',
+  cart: '<path d="M3 4h2l2.5 11h10l2-8H7"/><circle cx="9" cy="19" r="1.4"/><circle cx="17" cy="19" r="1.4"/>',
+  cloud: '<path d="M7 18a4.5 4.5 0 01-.6-8.96A6 6 0 0118 9.5 4.3 4.3 0 0117.5 18z"/>',
+  shield: '<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/>',
+  coin: '<circle cx="12" cy="12" r="8.5"/><path d="M12 7v10M9.5 9.5c0-1 1-1.6 2.5-1.6s2.5.7 2.5 1.7c0 2.2-5 1.2-5 3.7 0 1 1 1.7 2.5 1.7s2.5-.6 2.5-1.6"/>'
+};
+const ico = (n, s) => '<svg class="ico" width="' + (s || 22) + '" height="' + (s || 22) + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + IC[n] + '</svg>';
+
+/* ---------- خواندن بارکد (EAN-13 / EAN-8 / UPC-A) از تصویر خاکستری، بدون هیچ کتابخانه‌ی بیرونی ---------- */
+const BC_L = ['0001101', '0011001', '0010011', '0111101', '0100011', '0110001', '0101111', '0111011', '0110111', '0001011'];
+const BC_G = ['0100111', '0110011', '0011011', '0100001', '0011101', '0111001', '0000101', '0010001', '0001001', '0010111'];
+const BC_R = ['1110010', '1100110', '1101100', '1000010', '1011100', '1001110', '1010000', '1000100', '1001000', '1110100'];
+const BC_P = ['LLLLLL', 'LLGLGG', 'LLGGLG', 'LLGGGL', 'LGLLGG', 'LGGLLG', 'LGGGLL', 'LGLGLG', 'LGLGGL', 'LGGLGL'];
+function eanCheck(d) { const n = d.length; let s = 0; for (let i = 0; i < n - 1; i++) s += d[i] * (((n - 1 - i) % 2) ? 3 : 1); return (10 - s % 10) % 10 === d[n - 1]; }
+function eanFromBits(b) { // b: آرایه 0/1 با طول ۹۵ (EAN-13) یا ۶۷ (EAN-8)
+  const m = (a, i, p) => { for (let k = 0; k < p.length; k++) if (a[i + k] !== +p[k]) return false; return true; };
+  const dig = (a, i, tabs) => { for (const [t, tag] of tabs) for (let d = 0; d < 10; d++) if (m(a, i, t[d])) return [d, tag]; return null; };
+  if (b.length === 95) {
+    if (!m(b, 0, '101') || !m(b, 45, '01010') || !m(b, 92, '101')) return null;
+    const ds = []; let par = '';
+    for (let k = 0; k < 6; k++) { const r = dig(b, 3 + k * 7, [[BC_L, 'L'], [BC_G, 'G']]); if (!r) return null; ds.push(r[0]); par += r[1]; }
+    const first = BC_P.indexOf(par); if (first < 0) return null;
+    const out = [first, ...ds];
+    for (let k = 0; k < 6; k++) { const r = dig(b, 50 + k * 7, [[BC_R, 'R']]); if (!r) return null; out.push(r[0]); }
+    return eanCheck(out) ? out.join('') : null;
+  }
+  if (b.length === 67) {
+    if (!m(b, 0, '101') || !m(b, 31, '01010') || !m(b, 64, '101')) return null;
+    const out = [];
+    for (let k = 0; k < 4; k++) { const r = dig(b, 3 + k * 7, [[BC_L, 'L']]); if (!r) return null; out.push(r[0]); }
+    for (let k = 0; k < 4; k++) { const r = dig(b, 36 + k * 7, [[BC_R, 'R']]); if (!r) return null; out.push(r[0]); }
+    return eanCheck(out) ? out.join('') : null;
+  }
+  return null;
+}
+/* ----- خواندن بر پایهٔ عرض نوارها (مقاوم در برابر تاری، لرزش و ضخیم/نازک شدن جوهر) ----- */
+const runsOf = bits => { const o = []; let c = bits[0], n = 1; for (let i = 1; i < bits.length; i++) { if (bits[i] === c) n++; else { o.push(n); c = bits[i]; n = 1; } } o.push(n); return o; };
+const PAT = { L: BC_L.map(runsOf), G: BC_G.map(runsOf), R: BC_R.map(runsOf) };
+function matchDigit(r, k, tabs, lim) { // چهار عرض پشت‌سرهم → رقم
+  const t = r[k] + r[k + 1] + r[k + 2] + r[k + 3]; if (!(t >= 4)) return null;
+  const unit = t / 7; let best = null, bv = 1e9;
+  for (const tag in tabs) for (let d = 0; d < 10; d++) {
+    const p = tabs[tag][d]; let v = 0, bad = false;
+    for (let j = 0; j < 4; j++) { const sp = p[j] * unit, e = Math.abs(r[k + j] - sp) / sp; if (e > 0.8) { bad = true; break; } v += e; }
+    if (!bad && v < bv) { bv = v; best = { d, tag }; }
+  }
+  return best && bv / 4 < (lim || 0.45) ? { d: best.d, tag: best.tag, unit } : null;
+}
+const ok_ = (x, g) => x >= g * 0.5 && x <= g * 1.8;
+function decodeRunsAt(r, i) { // r[i] = اولین میلهٔ گارد شروع
+  const g = (r[i] + r[i + 1] + r[i + 2]) / 3;
+  if (i > 0 && r[i - 1] < g * 3.5) return null; /* حاشیهٔ سکوت قبل از بارکد */
+  for (const n of [6, 4]) {
+    if (i + 3 + n * 8 + 8 > r.length) continue;
+    let k = i + 3, bad = false; const left = [], tags = [], us = [], lim = n === 6 ? 0.45 : 0.3;
+    for (let q = 0; q < n && !bad; q++) { const m = matchDigit(r, k, n === 6 ? { L: PAT.L, G: PAT.G } : { L: PAT.L }, lim); if (!m || !ok_(m.unit, g)) bad = true; else { left.push(m.d); tags.push(m.tag); us.push(m.unit); k += 4; } }
+    if (bad) continue;
+    for (let j = 0; j < 5; j++) if (!ok_(r[k + j], g)) bad = true; if (bad) continue; k += 5;
+    const right = [];
+    for (let q = 0; q < n && !bad; q++) { const m = matchDigit(r, k, { R: PAT.R }, lim); if (!m || !ok_(m.unit, g)) bad = true; else { right.push(m.d); us.push(m.unit); k += 4; } }
+    if (bad) continue;
+    for (let j = 0; j < 3; j++) if (!ok_(r[k + j], g)) bad = true; if (bad) continue;
+    if (k + 3 < r.length && r[k + 3] < g * 3.5) continue; /* حاشیهٔ سکوت بعد از بارکد */
+    const um = us.reduce((a, b) => a + b, 0) / us.length; if (us.some(u => u < um * 0.65 || u > um * 1.5)) continue;
+    let out;
+    if (n === 6) { const first = BC_P.indexOf(tags.join('')); if (first < 0) continue; out = [first, ...left, ...right]; } else out = [...left, ...right];
+    if (eanCheck(out)) return out.join('');
+  }
+  return null;
+}
+function rowRuns(g, wf, th) {
+  const n = g.length; if (n < 80) return null;
+  const sm = new Float32Array(n); for (let i = 0; i < n; i++) sm[i] = ((g[Math.max(0, i - 1)] + g[i] * 2 + g[Math.min(n - 1, i + 1)]) / 4);
+  const w = Math.max(24, n >> (wf === 8 ? 3 : wf === 5 ? 2 : wf === 12 ? 3 : 4)), pre = new Float32Array(n + 1); for (let i = 0; i < n; i++) pre[i + 1] = pre[i] + sm[i];
+  const bin = new Uint8Array(n); for (let i = 0; i < n; i++) { const a = Math.max(0, i - w), c = Math.min(n, i + w), mean = (pre[c] - pre[a]) / (c - a); bin[i] = sm[i] < mean * th ? 1 : 0; }
+  const runs = []; let cur = bin[0], len = 1; for (let i = 1; i < n; i++) { if (bin[i] === cur) len++; else { runs.push(len); cur = bin[i]; len = 1; } } runs.push(len);
+  for (let i = bin[0] === 1 ? 0 : 1; i + 58 < runs.length || i + 42 < runs.length; i += 2) {
+    const a = runs[i], b2 = runs[i + 1], c = runs[i + 2], m0 = (a + b2 + c) / 3; if (m0 < 1.2) continue;
+    if (Math.abs(a - m0) > m0 * 0.6 || Math.abs(b2 - m0) > m0 * 0.6 || Math.abs(c - m0) > m0 * 0.6) continue;
+    const r = decodeRunsAt(runs, i); if (r) return r;
+  }
+  return null;
+}
+const BC_CFG = [[8, 0.92], [8, 1.0], [5, 0.85], [12, 0.95], [8, 0.8], [4, 1.0]];
+function barcodeRow(g, deep) {
+  const a = Array.from(g), cfg = deep === false ? BC_CFG.slice(0, 3) : BC_CFG;
+  for (const arr of [a, a.slice().reverse()]) for (const [wf, th] of cfg) { const r = rowRuns(arr, wf, th); if (r) return r; }
+  if (deep === false) return null;
+  for (const arr of [a, a.slice().reverse()]) for (const [wf, th] of cfg) { const r = barcodeRow1(arr, wf, th); if (r) return r; }
+  return null;
+}
+function barcodeRow1(g, wf, th) { // g: آرایه‌ی روشنایی یک خط؛ خروجی: رشته‌ی بارکد یا null
+  const n = g.length; if (n < 60) return null;
+  const sm = new Float32Array(n); for (let i = 0; i < n; i++) sm[i] = ((g[Math.max(0, i - 1)] + g[i] * 2 + g[Math.min(n - 1, i + 1)]) / 4);
+  /* آستانه‌ی محلی با میانگین متحرک */
+  const w = Math.max(24, n >> (wf === 8 ? 3 : wf === 5 ? 2 : wf === 12 ? 3 : 4)), pre = new Float32Array(n + 1); for (let i = 0; i < n; i++) pre[i + 1] = pre[i] + sm[i];
+  const bin = new Uint8Array(n); for (let i = 0; i < n; i++) { const a = Math.max(0, i - w), c = Math.min(n, i + w), mean = (pre[c] - pre[a]) / (c - a); bin[i] = sm[i] < mean * th ? 1 : 0; }
+  const runs = [], starts = []; let cur = bin[0], len = 1, st = 0; for (let i = 1; i < n; i++) { if (bin[i] === cur) len++; else { runs.push(len); starts.push(st); cur = bin[i]; st = i; len = 1; } } runs.push(len); starts.push(st);
+  const firstBar = bin[0] === 1 ? 0 : 1;
+  for (let i = firstBar; i + 3 < runs.length; i += 2) { // i = ابتدای یک میله
+    const a = runs[i], b2 = runs[i + 1], c = runs[i + 2]; const m0 = (a + b2 + c) / 3; if (m0 < 1.4) continue;
+    if (Math.abs(a - m0) > m0 * 0.55 || Math.abs(b2 - m0) > m0 * 0.55 || Math.abs(c - m0) > m0 * 0.55) continue;
+    const x0 = starts[i];
+    for (const len2 of [95, 67]) {
+      for (let j = i + 2; j < runs.length; j += 2) { // j = میله‌ی پایانی احتمالی
+        const x1 = starts[j] + runs[j], span = x1 - x0, mw = span / len2;
+        if (mw > m0 * 1.3) break; if (mw < m0 * 0.75) continue;
+        const bits = new Array(len2); for (let k = 0; k < len2; k++) bits[k] = bin[Math.min(n - 1, Math.round(x0 + (k + 0.5) * mw))];
+        const r = eanFromBits(bits); if (r) return r;
+      }
+    }
+  }
+  return null;
+}
+function lineAt(gray, w, h, cx, cy, ang) { // نمونه‌برداری از یک خط مایل (میانگین سه خط موازی)
+  const dx = Math.cos(ang), dy = Math.sin(ang), nx = -dy, ny = dx; let t0 = -1e9, t1 = 1e9;
+  if (Math.abs(dx) > 1e-6) { const a = (2 - cx) / dx, b = (w - 3 - cx) / dx; t0 = Math.max(t0, Math.min(a, b)); t1 = Math.min(t1, Math.max(a, b)); }
+  if (Math.abs(dy) > 1e-6) { const a = (2 - cy) / dy, b = (h - 3 - cy) / dy; t0 = Math.max(t0, Math.min(a, b)); t1 = Math.min(t1, Math.max(a, b)); }
+  const n = Math.floor(t1 - t0); if (!(n >= 80)) return null;
+  const o = new Float32Array(n);
+  for (let i = 0; i < n; i++) { const t = t0 + i; let s = 0; for (let k = -1; k <= 1; k++) { const x = Math.round(cx + t * dx + k * 1.5 * nx), y = Math.round(cy + t * dy + k * 1.5 * ny); s += gray[Math.min(h - 1, Math.max(0, y)) * w + Math.min(w - 1, Math.max(0, x))]; } o[i] = s / 3; }
+  return o;
+}
+function decodeBarcode(gray, w, h, opt) { // gray: آرایهٔ w*h؛ opt.deep=false → سریع (برای دوربین زنده)
+  const deep = !(opt && opt.deep === false), D = Math.PI / 180;
+  const plan = [];
+  for (const f of [0.5, 0.4, 0.6, 0.3, 0.7, 0.2, 0.8, 0.12, 0.88]) plan.push([0.5, f, 0]);
+  for (const a of [7, -7, 14, -14]) for (const f of [0.5, 0.35, 0.65]) plan.push([0.5, f, a]);
+  for (const f of [0.5, 0.35, 0.65, 0.2, 0.8]) plan.push([f, 0.5, 90]);
+  if (deep) { for (const a of [22, -22, 30, -30]) for (const f of [0.5, 0.35, 0.65]) plan.push([0.5, f, a]); for (const a of [83, 97, 76, 104]) for (const f of [0.5, 0.3, 0.7]) plan.push([f, 0.5, a]); }
+  for (const [fx, fy, a] of plan) { const g = lineAt(gray, w, h, w * fx, h * fy, a * D); if (!g) continue; const r = barcodeRow(g, deep ? true : false); if (r) return r; }
+  return null;
+}
+function eanBits(code) { // برای تست و ساخت تصویر نمونه
+  const d = String(code).split('').map(Number); let s = '';
+  if (d.length === 13) { s = '101'; const p = BC_P[d[0]]; for (let i = 0; i < 6; i++) s += (p[i] === 'L' ? BC_L : BC_G)[d[1 + i]]; s += '01010'; for (let i = 0; i < 6; i++) s += BC_R[d[7 + i]]; s += '101'; }
+  else { s = '101'; for (let i = 0; i < 4; i++) s += BC_L[d[i]]; s += '01010'; for (let i = 0; i < 4; i++) s += BC_R[d[4 + i]]; s += '101'; }
+  return s;
+}
+
+let bcS = null;
+function stopScan() { if (bcS) { bcS.on = false; try { bcS.stream && bcS.stream.getTracks().forEach(t => t.stop()); } catch (e) {} bcS = null; } }
+function bcBeep() { try { navigator.vibrate && navigator.vibrate(60); const C = window.AudioContext || window.webkitAudioContext; if (!C) return; const c = new C(), o = c.createOscillator(), g = c.createGain(); o.frequency.value = 1100; g.gain.value = .08; o.connect(g); g.connect(c.destination); o.start(); setTimeout(() => { o.stop(); c.close(); }, 110); } catch (e) {} }
+const gcv = document.createElement('canvas'), gcx = gcv.getContext('2d', { willReadFrequently: true });
+function grayOf(src, sw, sh, maxW) { /* src: video/canvas/img */ const sc = Math.min(1, maxW / sw), w = Math.max(1, Math.round(sw * sc)), h = Math.max(1, Math.round(sh * sc)); gcv.width = w; gcv.height = h; gcx.drawImage(src, 0, 0, w, h); const d = gcx.getImageData(0, 0, w, h).data, g = new Uint8Array(w * h); for (let i = 0, j = 0; j < g.length; i += 4, j++) g[j] = (d[i] * 77 + d[i + 1] * 150 + d[i + 2] * 29) >> 8; return { g, w, h }; }
+function decodeFrame(src, sw, sh, widths, deep) { for (const mw of widths) { const o = grayOf(src, sw, sh, mw); const r = L.decodeBarcode(o.g, o.w, o.h, { deep: deep !== false }); if (r) return r; } return null; }
+function decodePhoto(file) { return new Promise(res => { const u = URL.createObjectURL(file), im = new Image(); im.onload = () => { let r = null; try { r = decodeFrame(im, im.naturalWidth, im.naturalHeight, [1600, 1100, 800, 2200]); } catch (e) {} URL.revokeObjectURL(u); res(r); }; im.onerror = () => { URL.revokeObjectURL(u); res(null); }; im.src = u; }); }
+/* opts.multi: دوربین باز می‌ماند و هر بارکد جدید به cb داده می‌شود */
+async function scanBarcode(cb, opts) {
+  opts = opts || {}; stopScan();
+  let det = null; if ('BarcodeDetector' in window) { try { det = new BarcodeDetector({ formats: ['ean_13', 'ean_8', 'upc_a', 'upc_e'] }); } catch (e) { det = null; } }
+  const w = openSheet('<h3 class="st">' + (opts.multi ? 'اسکن پیاپی بارکد' : 'بارکد را جلوی دوربین بگیر') + '</h3><div class="bcbox"><video id="bcv" class="bcv" playsinline muted autoplay></video><i class="bcl"></i></div><div class="fchips" id="bcx"></div><div class="hint" id="bcm" style="text-align:center">در حال باز کردن دوربین...</div><div class="pr"><label class="btn ghost tap" style="text-align:center;cursor:pointer">عکس گرفتن از بارکد<input type="file" id="bcf" accept="image/*" capture="environment" style="display:none"></label><button class="btn ghost tap" data-a="bc-close">' + (opts.multi ? 'پایان' : 'بستن') + '</button></div>');
+  const msg = t => { const e = $('#bcm', w); if (e) e.textContent = t; };
+  bcS = { on: true, w, stream: null, onEnd: opts.onEnd }; const me = bcS; let last = '', lastT = 0;
+  const cand = {}; const got = (txt, sure) => { if (bcS !== me || !me.on) return; const t = Date.now(); if (!sure) { const c = cand[txt] = (cand[txt] && t - cand[txt].t < 2000 ? { n: cand[txt].n + 1, t } : { n: 1, t }); if (c.n < 2) return; delete cand[txt]; } if (txt === last && t - lastT < 2500) { lastT = t; return; } last = txt; lastT = t; bcBeep(); if (opts.multi) { const m = cb(txt); msg(typeof m === 'string' ? m : 'خوانده شد: ' + fa(txt)); } else { stopScan(); closeSheet(w); cb(txt); } };
+  $('#bcf', w).onchange = async e => { const f = e.target.files[0]; if (!f) return; msg('در حال خواندن عکس...'); const r = await decodePhoto(f); if (r) got(r, true); else msg('بارکدی در عکس پیدا نشد. نزدیک‌تر و صاف‌تر و با نور بهتر دوباره بگیر، یا بارکد را تایپ کن.'); e.target.value = ''; };
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { msg('این مرورگر دوربین زنده نمی‌دهد؛ با «عکس گرفتن از بارکد» ادامه بده.'); return; }
+  let stream; try { stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' }, width: { ideal: 1920 }, height: { ideal: 1080 }, frameRate: { ideal: 30, max: 30 } }, audio: false }); } catch (e) { msg('اجازهٔ دوربین داده نشد (تنظیمات مرورگر → دوربین). می‌توانی با «عکس گرفتن از بارکد» ادامه بدهی.'); return; }
+  if (bcS !== me) { stream.getTracks().forEach(t => t.stop()); return; }
+  me.stream = stream; const v = $('#bcv', w); v.srcObject = stream; try { await v.play(); } catch (e) {}
+  msg('بارکد را وسط کادر و صاف بگیر');
+  /* فوکوس پیوسته، چراغ و زوم (اگر دستگاه پشتیبانی کند) */
+  try {
+    const tr = stream.getVideoTracks()[0], cap = (tr.getCapabilities && tr.getCapabilities()) || {}, adv = [];
+    if (cap.focusMode && cap.focusMode.includes('continuous')) adv.push({ focusMode: 'continuous' });
+    if (adv.length) await tr.applyConstraints({ advanced: adv }).catch(() => {});
+    const bar = $('#bcx', w);
+    if (bar) { let h = ''; if (cap.torch) h += '<button class="chip tap" data-a="bc-torch">چراغ قوه</button>'; if (cap.zoom && cap.zoom.max > 1.2) h += '<button class="chip tap" data-a="bc-zoom">بزرگ‌نمایی ×۲</button>'; bar.innerHTML = h; me.track = tr; me.cap = cap; }
+  } catch (e) {}
+  let n = 0, dur = 0;
+  const tick = async () => {
+    if (bcS !== me || !me.on) return;
+    try {
+      if (v.videoWidth) {
+        let r = null, sure = false;
+        if (det) { try { const x = await det.detect(v); if (x && x[0]) { r = x[0].rawValue; sure = true; } } catch (e) { det = null; } }
+        if (!r) { n++; const t0 = performance.now(); r = decodeFrame(v, v.videoWidth, v.videoHeight, n % 3 === 0 && dur < 120 ? [1920] : [1280], n % 4 === 0); dur = performance.now() - t0; }
+        if (r) got(r, sure);
+      }
+    } catch (e) {}
+    setTimeout(tick, Math.max(90, dur * 1.2));
+  };
+  tick();
+}
+A['bc-torch'] = t => { const m = bcS; if (!m || !m.track) return; m.torchOn = !m.torchOn; m.track.applyConstraints({ advanced: [{ torch: m.torchOn }] }).catch(() => toast('چراغ در این دستگاه روشن نشد.', 1)); t.classList.toggle('on', m.torchOn); };
+A['bc-zoom'] = t => { const m = bcS; if (!m || !m.track) return; m.zoomOn = !m.zoomOn; const z = m.zoomOn ? Math.min(2, m.cap.zoom.max) : (m.cap.zoom.min || 1); m.track.applyConstraints({ advanced: [{ zoom: z }] }).catch(() => {}); t.classList.toggle('on', m.zoomOn); };
+A['bc-close'] = t => { const oe = bcS && bcS.onEnd; stopScan(); closeSheet(t.closest('.sw')); if (oe) oe(); };
+
+/* ================= انبارگردان: وضعیت و ذخیره‌سازی ================= */
+const L = { decodeBarcode, eanBits, eanCheck };
+const idb = () => new Promise((res, rej) => { const r = indexedDB.open('anbar', 1); r.onupgradeneeded = () => r.result.createObjectStore('kv'); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); });
+const kvGet = async k => { try { const db = await idb(); return await new Promise(res => { const q = db.transaction('kv').objectStore('kv').get(k); q.onsuccess = () => res(q.result); q.onerror = () => res(null); }); } catch (e) { return null; } };
+const kvSet = async (k, v) => { try { const db = await idb(); await new Promise(res => { const t = db.transaction('kv', 'readwrite'); t.objectStore('kv').put(v, k); t.oncomplete = res; t.onerror = res; }); } catch (e) {} };
+const newS = () => ({ v: 1, products: {}, sessions: [], cfg: { currency: 'ریال', sound: true, askQty: false, next: 1 }, fromAt: 0 });
+let S = newS(), saveT = 0, ready = false;
+function save() { clearTimeout(saveT); saveT = setTimeout(() => kvSet('s', JSON.parse(JSON.stringify(S))), 250); }
+addEventListener('visibilitychange', () => { if (document.hidden && ready) kvSet('s', JSON.parse(JSON.stringify(S))); });
+const cur = () => S.cfg.currency || 'ریال';
+const mu = n => fa(grp(n)) + ' ' + cur();
+const endH = (b, s, cls) => '<b class="' + (cls || '') + '">' + b + '</b>' + (s ? '<small class="mut">' + s + '</small>' : '');
+const select = (label, id, opts, val) => '<div class="f sel"><label for="' + id + '">' + label + '</label><select id="' + id + '">' + opts.map(o => '<option value="' + esc(o[0]) + '"' + (o[0] === val ? ' selected' : '') + '>' + esc(o[1]) + '</option>').join('') + '</select></div>';
+const numF = (label, id, val, ph) => field(label, id, val ? fa(grp(val)) : '', { attr: 'inputmode="numeric" data-in="money"', ph });
+I.money = t => { const v = en(t.value).replace(/[^\d]/g, ''); t.value = v ? fa(grp(+v)) : ''; };
+/* ---- فایل ---- */
+function fileName(base, ext) { return (base || 'file').replace(/[\\/:*?"<>|\s]+/g, '-') + '.' + ext; }
+function shareFile(blob, name, title) {
+  const dl = () => { const u = URL.createObjectURL(blob), a = document.createElement('a'); a.href = u; a.download = name; document.body.appendChild(a); a.click(); setTimeout(() => { a.remove(); URL.revokeObjectURL(u); }, 3000); };
+  try { const f = new File([blob], name, { type: blob.type }); if (navigator.canShare && navigator.canShare({ files: [f] })) { navigator.share({ files: [f], title: title || name }).catch(e => { if (e && e.name !== 'AbortError') dl(); }); return; } } catch (e) {}
+  dl();
+}
+function pickFile(accept, cb) { const i = document.createElement('input'); i.type = 'file'; i.accept = accept; i.style.display = 'none'; document.body.appendChild(i); i.onchange = () => { const f = i.files[0]; i.remove(); if (f) f.text().then(cb).catch(() => toast('فایل خوانده نشد.', 1)); }; i.click(); }
+/* ---- بارکد ---- */
+const bcN = s => en(s || '').replace(/\D/g, '');
+const bcKey = s => bcN(s).replace(/^0+/, '');
+const eanOk = c => (c.length === 13 || c.length === 8) && L.eanCheck(c.split('').map(Number));
+const eanDig = b12 => { let s = 0; for (let i = 0; i < 12; i++) s += +b12[i] * (i % 2 ? 3 : 1); return (10 - s % 10) % 10; };
+function genBc() { for (;;) { const n = S.cfg.next++; const b = '2' + String(n).padStart(11, '0'); const c = b + eanDig(b); if (!findBc(c)) { save(); return c; } } }
+const prods = () => Object.values(S.products);
+function findBc(code, except) { const k = bcKey(code); if (!k) return null; return prods().find(p => p.id !== except && p.bc && bcKey(p.bc) === k) || null; }
+const ean13 = c => { c = bcN(c); if (c.length === 12) c = '0' + c; return c.length === 13 && eanOk(c) ? c : c.length === 8 && eanOk(c) ? c : ''; };
+/* ---- صدا ---- */
+/* ---- نمایش اصلی ---- */
+const TABS = [['count', 'check', 'شمارش'], ['prod', 'box', 'کالاها'], ['lab', 'tag', 'برچسب'], ['more', 'menu', 'بیشتر']];
+const ui = { tab: 'count', q: '', f: 'all' };
+const VIEWS = { count: tabCount, prod: tabProd, lab: tabLab, more: tabMore };
+function render() {
+  const m = $('#main'), n = $('#nav'); if (!ready) { m.innerHTML = ''; return; }
+  const sc = m.scrollTop; m.innerHTML = VIEWS[ui.tab](); m.scrollTop = sc;
+  n.innerHTML = TABS.map(x => '<button class="tap' + (x[0] === ui.tab ? ' on' : '') + '" data-a="tab" data-id="' + x[0] + '">' + ico(x[1], 24) + '<span>' + x[2] + '</span></button>').join('');
+}
+A.tab = t => { ui.tab = t.dataset.id; ui.q = ''; ui.f = 'all'; render(); $('#main').scrollTop = 0; };
+const topH = (h, lbl, val, chips) => '<div class="top"><h1>' + h + '</h1>' + (lbl ? '<div class="status"><div class="lbl">' + lbl + '</div><div class="val">' + val + '</div></div>' : '') + (chips ? '<div class="chips">' + chips + '</div>' : '') + '</div>';
+const searchH = (ph, v) => '<div class="srow" style="margin:10px 0 0"><div class="search">' + ico('search', 20) + '<input data-in="q" placeholder="' + ph + '" value="' + esc(v) + '" autocomplete="off"></div></div>';
+I.q = t => { ui.q = t.value; const l = $('#list'); if (l) l.innerHTML = ui.tab === 'prod' ? prodList() : labList(); };
+/* ================= جلسه‌های شمارش ================= */
+const sess = id => S.sessions.find(s => s.id === id);
+const sessTot = s => { const v = Object.values(s.counts); return { n: v.length, q: v.reduce((a, b) => a + b, 0) }; };
+function tabCount() {
+  const ps = prods(), ss = S.sessions.slice().sort((a, b) => b.ts - a.ts);
+  const head = topH('انبارگردانی', 'کالاهای تعریف‌شده', fa(ps.length), '<button class="chip tap" data-a="s-new">' + ico('plus', 15) + ' شمارش جدید</button>');
+  return head + '<div class="wrap">' + (ss.length ? '<div class="list">' + ss.map(s => { const t = sessTot(s); return rowH({ a: 's-open', id: s.id, title: s.name, sub: fdate(s.ts) + ' • ' + fa(t.n) + ' کالا • ' + qf(t.q) + ' عدد', icon: 'check', av: s.done ? 'green' : 'amber', end: s.done ? '<small class="mut">بسته</small>' : '' }); }).join('') + '</div>'
+    : empty('هنوز شمارشی نیست', '<div class="hint">«شمارش جدید» را بزن و کالاها را با دوربین یا اسکنر بشمار.</div>')) + '</div>' +
+    '<div class="fabs"><button class="fab-x tap" data-a="s-new">شمارش جدید</button></div>';
+}
+A['s-new'] = () => { const w = openSheet('<h3 class="st">شمارش جدید</h3>' + field('نام شمارش', 'snm', 'انبارگردانی ' + fdate(Date.now())) + '<div class="pr"><button class="btn tap" data-a="s-make">شروع</button></div>'); setTimeout(() => { const e = $('#snm', w); e && e.select(); }, 80); };
+A['s-make'] = t => { const w = t.closest('.sw'), s = { id: uid(), name: $('#snm', w).value.trim() || 'انبارگردانی', ts: Date.now(), counts: {}, last: [], done: false }; S.sessions.push(s); save(); closeSheet(w); render(); openSession(s.id); };
+let cs = null; /* جلسه‌ی باز */
+function openSession(id) {
+  const s = sess(id); if (!s) return;
+  const p = openPage({ title: esc(s.name), body: '', foot: '<button class="btn tap" data-a="s-res">نتیجه و خروجی</button><button class="btn ghost tap" data-a="s-menu">' + ico('menu', 18) + '</button>' });
+  p.el._id = id; p.el._redraw = () => sDraw(p.el); cs = { id, el: p.el, lastPid: '' }; sDraw(p.el);
+  setTimeout(() => { const e = $('#scin', p.el); e && !s.done && e.focus(); }, 200);
+}
+function sDraw(el) {
+  const s = sess(el._id); if (!s) return; const t = sessTot(s), b = $('.pbody', el), foc = document.activeElement && document.activeElement.id === 'scin';
+  const ps = Object.keys(s.counts).map(id => S.products[id]).filter(Boolean).sort((a, c) => (s.order && s.order[c.id] || 0) - (s.order && s.order[a.id] || 0));
+  const lp = cs && cs.lastPid && S.products[cs.lastPid], q = $('#sq', el) ? $('#sq', el).value : '';
+  b.innerHTML = '<div class="boxes g2" style="margin-top:12px"><div class="cell"><small>کالاهای شمرده‌شده</small><b>' + fa(t.n) + '</b></div><div class="cell"><small>جمع تعداد</small><b>' + qf(t.q) + '</b></div></div>' +
+    (s.done ? '<div class="warn-note">این شمارش بسته شده است. برای تغییر، از منوی پایین «باز کردن دوباره» را بزن.</div>' : '<div class="box" style="margin-top:12px"><div class="f" style="margin:0"><label for="scin">بارکد را با اسکنر بزن یا تایپ کن، بعد Enter</label><input id="scin" inputmode="numeric" enterkeyhint="done" autocomplete="off" placeholder="منتظر اسکن..." data-kd="scin"></div>' +
+      '<div class="pr" style="margin-top:10px"><button class="btn tap" data-a="s-cam">' + ico('search', 18) + ' اسکن با دوربین</button><button class="btn ghost tap" data-a="s-pick">افزودن دستی</button></div></div>') +
+    (lp ? '<div class="box sec" id="lastc"><div class="mrow"><b>' + esc(lp.name) + '</b><b style="font-size:22px">' + qf(s.counts[lp.id] || 0) + ' <small class="mut">' + esc(lp.unit || '') + '</small></b></div>' + (s.done ? '' : '<div class="pr" style="margin-top:8px"><button class="btn tap" data-a="s-add" data-id="' + lp.id + '" data-d="1">یکی بیشتر</button><button class="btn ghost tap" data-a="s-add" data-id="' + lp.id + '" data-d="-1">یکی کمتر</button><button class="btn ghost tap" data-a="s-qty" data-id="' + lp.id + '">تعداد</button></div>') + '</div>' : '') +
+    '<div class="count" style="margin-top:14px">' + fa(ps.length) + ' کالا</div><div class="list">' + ps.map(p => rowH({ a: 's-qty', id: p.id, title: p.name, sub: (p.bc ? fa(p.bc) : 'بدون بارکد') + (p.stock != null ? ' • دفتر: ' + qf(p.stock) : ''), icon: 'box', end: endH(qf(s.counts[p.id]), p.unit || '') })).join('') + '</div>' + (ps.length ? '' : '<div class="hint" style="text-align:center;padding:20px">اولین بارکد را اسکن کن.</div>');
+  if (foc || (cs && cs.refocus)) { const e = $('#scin', el); e && e.focus(); }
+}
+document.addEventListener('keydown', e => { const t = e.target; if (t && t.id === 'scin' && (e.key === 'Enter' || e.keyCode === 13)) { e.preventDefault(); const v = t.value.trim(); t.value = ''; if (v) onScan(v); } });
+function bump(s, pid, d) { s.counts[pid] = Math.max(0, Math.round(((s.counts[pid] || 0) + d) * 1000) / 1000); (s.order = s.order || {})[pid] = Date.now(); if (cs) cs.lastPid = pid; if (!s.counts[pid] && d <= 0) { /* می‌ماند با صفر */ } save(); }
+function onScan(code) {
+  const s = cs && sess(cs.id); if (!s || s.done) return 'شمارش بسته است';
+  const c = bcN(code); if (!c) return 'بارکد نامعتبر';
+  const p = findBc(c);
+  if (!p) { prodSheet(null, np => { if (np) { bump(s, np.id, 1); redrawS(); } }, { bc: c }); return 'کالای جدید: بارکد ' + fa(c); }
+  if (S.cfg.askQty) { cs.lastPid = p.id; qtySheet(p.id, true); return p.name; }
+  bump(s, p.id, 1); redrawS(); return p.name + ' ← ' + qf(s.counts[p.id]);
+}
+function redrawS() { if (cs && cs.el && cs.el.isConnected) { cs.refocus = true; sDraw(cs.el); cs.refocus = false; } }
+A['s-cam'] = () => { const s = sess(cs.id); scanBarcode(txt => onScan(txt), { multi: true, onEnd: () => { redrawS(); } }); };
+A['s-add'] = t => { const s = sess(cs.id); bump(s, t.dataset.id, +t.dataset.d); redrawS(); };
+A['s-pick'] = () => pickProd(p => { const s = sess(cs.id); bump(s, p.id, 0); (s.counts[p.id] = s.counts[p.id] || 0); cs.lastPid = p.id; save(); redrawS(); qtySheet(p.id); });
+function qtySheet(pid, add) {
+  const s = sess(cs.id), p = S.products[pid]; if (!p) return;
+  const w = openSheet('<h3 class="st">' + esc(p.name) + '</h3><div class="hint">' + (p.bc ? fa(p.bc) : 'بدون بارکد') + (p.stock != null ? ' • موجودی دفتر: ' + qf(p.stock) + ' ' + esc(p.unit || '') : '') + '</div>' + field(add ? 'چند عدد اضافه شود؟' : 'تعداد شمارش‌شده', 'qv', add ? '1' : qf(s.counts[pid] || 0).replace(/٬/g, ''), { attr: 'inputmode="decimal"' }) + '<div class="pr"><button class="btn tap" data-a="q-ok">ثبت</button>' + (add ? '' : '<button class="btn danger tap" data-a="q-del">حذف از شمارش</button>') + '</div>');
+  w._pid = pid; w._add = !!add; setTimeout(() => { const e = $('#qv', w); e && (e.focus(), e.select()); }, 100);
+  w.addEventListener('keydown', e => { if (e.key === 'Enter') A['q-ok']($('[data-a=q-ok]', w)); });
+}
+A['s-qty'] = t => qtySheet(t.dataset.id);
+A['q-ok'] = t => { const w = t.closest('.sw'), s = sess(cs.id), v = num($('#qv', w).value); if (w._add) bump(s, w._pid, v); else { s.counts[w._pid] = Math.max(0, v); (s.order = s.order || {})[w._pid] = Date.now(); cs.lastPid = w._pid; save(); } closeSheet(w); redrawS(); };
+A['q-del'] = t => { const w = t.closest('.sw'), s = sess(cs.id); delete s.counts[w._pid]; if (cs.lastPid === w._pid) cs.lastPid = ''; save(); closeSheet(w); redrawS(); };
+A['s-menu'] = () => { const s = sess(cs.id); openSheet('<h3 class="st">' + esc(s.name) + '</h3><div class="list">' +
+  rowH({ a: 's-done', title: s.done ? 'باز کردن دوباره' : 'بستن شمارش', sub: s.done ? 'اجازه‌ی ادامه‌ی شمارش' : 'جلوگیری از تغییر', icon: 'check' }) + rowH({ a: 's-ren', title: 'تغییر نام', icon: 'edit' }) + rowH({ a: 's-del', title: 'حذف این شمارش', icon: 'trash', av: 'red' }) + '</div>'); };
+A['s-done'] = t => { const s = sess(cs.id); s.done = !s.done; save(); closeSheet(t.closest('.sw')); redrawS(); render(); };
+A['s-ren'] = t => { const s = sess(cs.id); closeSheet(t.closest('.sw')); const w = openSheet('<h3 class="st">تغییر نام</h3>' + field('نام', 'rnm', s.name) + '<div class="pr"><button class="btn tap" data-a="s-ren-ok">ثبت</button></div>'); };
+A['s-ren-ok'] = t => { const w = t.closest('.sw'), s = sess(cs.id), v = $('#rnm', w).value.trim(); if (v) { s.name = v; save(); } closeSheet(w); const h = cs.el.querySelector('h2'); if (h) h.textContent = s.name; render(); };
+A['s-del'] = t => { const w = t.closest('.sw'); closeSheet(w); ask('این شمارش حذف شود؟', 'حذف', () => { S.sessions = S.sessions.filter(x => x.id !== cs.id); save(); closePage(cs.el); }, true); };
+/* ---- نتیجه ---- */
+function resRows(s, only) {
+  const rows = [];
+  for (const p of prods()) { const c = s.counts[p.id]; if (c == null && !(p.stock > 0)) continue; const sys = p.stock == null ? null : p.stock, diff = c == null ? null : (sys == null ? null : c - sys); rows.push({ p, c, sys, diff }); }
+  rows.sort((a, b) => (b.c != null) - (a.c != null) || (Math.abs(b.diff || 0) - Math.abs(a.diff || 0)) || (a.p.name || '').localeCompare(b.p.name || '', 'fa'));
+  return only ? rows.filter(r => r.c != null && r.diff) : rows;
+}
+let rs = { id: '', only: false, zero: false };
+A['s-res'] = () => { rs = { id: cs.id, only: false, zero: false }; const p = openPage({ title: 'نتیجه‌ی شمارش', body: '', foot: '<button class="btn tap" data-a="r-xls">اکسل</button><button class="btn ghost tap" data-a="r-json">فایل برای دفتر فروش</button>' }); p.el._redraw = () => rDraw(p.el); rDraw(p.el); };
+function rDraw(el) {
+  const s = sess(rs.id), rows = resRows(s, rs.only), hasSys = prods().some(p => p.stock != null);
+  const tot = rows.filter(r => r.c != null), nd = tot.filter(r => r.diff).length, notC = prods().filter(p => s.counts[p.id] == null && p.stock > 0).length;
+  $('.pbody', el).innerHTML = '<div class="boxes g2" style="margin-top:12px"><div class="cell"><small>شمارش‌شده</small><b>' + fa(tot.length) + '</b></div><div class="cell"><small>' + (hasSys ? 'دارای اختلاف' : 'موجودی دفتر نیست') + '</small><b class="' + (nd ? 'neg' : 'pos') + '">' + (hasSys ? fa(nd) : '—') + '</b></div></div>' +
+    '<div class="f" style="margin-top:12px"><label>نمایش</label><div style="padding-top:8px">' + chipsH('rsf', [['all', 'همه'], ['diff', 'فقط اختلاف‌ها']], rs.only ? 'diff' : 'all') + '</div></div>' +
+    (notC ? '<button class="chk tap' + (rs.zero ? ' on' : '') + '" data-a="r-zero" style="margin-top:6px;padding:10px 12px;border-radius:var(--r-sm);background:var(--card);width:100%"><span class="b">' + ico('check', 16) + '</span><span>' + fa(notC) + ' کالای شمارش‌نشده را در خروجی «صفر» حساب کن</span></button>' : '') +
+    '<div style="overflow-x:auto;margin-top:12px"><table class="tbl"><tr><th>کالا</th><th>دفتر</th><th>شمارش</th><th>اختلاف</th></tr>' + rows.map(r => '<tr><td>' + esc(r.p.name) + '</td><td>' + (r.sys == null ? '—' : qf(r.sys)) + '</td><td>' + (r.c == null ? '<span class="mut">—</span>' : qf(r.c)) + '</td><td class="' + (r.diff > 0 ? 'pos' : r.diff < 0 ? 'neg' : '') + '">' + (r.diff == null ? '' : (r.diff > 0 ? '+' : '') + qf(r.diff)) + '</td></tr>').join('') + '</table></div>';
+}
+chipH.rsf = v => { rs.only = v === 'diff'; const el = $('.page:last-child'); rDraw(pages[pages.length - 1]); };
+A['r-zero'] = () => { rs.zero = !rs.zero; rDraw(pages[pages.length - 1]); };
+A['r-xls'] = () => {
+  const s = sess(rs.id), rows = resRows(s, false), c = cur();
+  const m = { title: 'نتیجه‌ی شمارش انبار', subtitle: s.name + ' — ' + fdate(s.ts), cur: c, summary: [{ l: 'کالاهای شمارش‌شده', v: Object.keys(s.counts).length, kind: 'num' }, { l: 'دارای اختلاف', v: rows.filter(r => r.c != null && r.diff).length, kind: 'num', tone: 'neg' }],
+    sheets: [{ name: 'شمارش', cols: [{ h: 'ردیف', t: 'num', w: 6 }, { h: 'کالا', t: 'text', w: 30 }, { h: 'بارکد', t: 'text', w: 16 }, { h: 'شناسه کالا', t: 'text', w: 16 }, { h: 'واحد', t: 'text', w: 8 }, { h: 'موجودی دفتر', t: 'num', w: 12 }, { h: 'شمارش', t: 'num', w: 10 }, { h: 'اختلاف', t: 'num', w: 10 }, { h: 'قیمت فروش (' + c + ')', t: 'money', w: 16 }, { h: 'قیمت مصرف‌کننده (' + c + ')', t: 'money', w: 18 }],
+      rows: rows.map((r, i) => [i + 1, r.p.name, r.p.bc ? fa(r.p.bc) : '', r.p.sid ? fa(r.p.sid) : '', r.p.unit || '', r.sys == null ? '' : r.sys, r.c == null ? '' : r.c, r.diff == null ? '' : r.diff, r.p.sale || '', r.p.cons || '']), tones: rows.map(r => r.diff > 0 ? 'pos' : r.diff < 0 ? 'neg' : '') }] };
+  try { shareFile(new Blob([XL.build(m)], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }), fileName(s.name + '-' + fdate(Date.now()).replace(/\//g, '-'), 'xlsx'), s.name); } catch (e) { toast('ساخت اکسل ممکن نشد.', 1); }
+};
+const pubP = p => ({ id: p.id, name: p.name, unit: p.unit || '', cat: p.cat || '', barcode: p.bc || '', sid: p.sid || '', sale: p.sale || 0, cons: p.cons || 0, isNew: !!p.isNew });
+A['r-json'] = () => {
+  const s = sess(rs.id), counts = Object.keys(s.counts).map(id => ({ id, qty: s.counts[id] }));
+  if (rs.zero) prods().forEach(p => { if (s.counts[p.id] == null && p.stock > 0) counts.push({ id: p.id, qty: 0 }); });
+  const used = new Set(counts.map(x => x.id)), ps = prods().filter(p => p.isNew || p.dirty || used.has(p.id)).map(pubP);
+  const o = { app: 'anbargardan', kind: 'result', v: 1, ts: Date.now(), session: s.name, products: ps, counts };
+  shareFile(new Blob([JSON.stringify(o)], { type: 'application/json' }), fileName('شمارش-' + s.name, 'json'), 'نتیجه‌ی شمارش'); toast('فایل ساخته شد. در دفتر فروش از «بیشتر ← انبارگردان» واردش کن.');
+};
+
+/* ================= کالاها ================= */
+const UNITS = ['عدد', 'بسته', 'کارتن', 'کیلوگرم', 'لیتر', 'جین'];
+function prodMatch(p, q) { q = (q || '').trim(); if (!q) return true; const d = bcN(q); return (p.name || '').includes(q) || (p.cat || '').includes(q) || !!(d && ((p.bc && bcN(p.bc).includes(d)) || (p.sid && bcN(p.sid).includes(d)))); }
+const PF = [['all', 'همه'], ['nobc', 'بدون بارکد'], ['noprice', 'بدون قیمت'], ['new', 'جدید']];
+function prodFilter(p) { const f = ui.f; return f === 'nobc' ? !p.bc : f === 'noprice' ? !(p.sale > 0) : f === 'new' ? !!p.isNew : true; }
+function prodList() {
+  const ps = prods().filter(p => prodMatch(p, ui.q) && prodFilter(p)).sort((a, b) => (a.name || '').localeCompare(b.name || '', 'fa'));
+  if (!prods().length) return empty('کالایی نیست', '<div class="hint">کالای جدید تعریف کن یا از «بیشتر» فایل کالاهای دفتر فروش را وارد کن.</div>');
+  return '<div class="count">' + fa(ps.length) + ' کالا</div><div class="list">' + ps.slice(0, 300).map(p => rowH({ a: 'p-edit', id: p.id, title: p.name, sub: (p.bc ? fa(p.bc) : 'بدون بارکد') + (p.sale ? ' • ' + mu(p.sale) : ''), icon: 'box', av: !p.bc ? 'amber' : p.isNew ? 'green' : '', end: p.stock != null ? endH(qf(p.stock), esc(p.unit || '')) : '' })).join('') + '</div>' + (ps.length > 300 ? '<div class="hint" style="text-align:center">برای دیدن بقیه جستجو کن.</div>' : '');
+}
+function tabProd() {
+  return topH('کالاها', 'تعداد کالا', fa(prods().length), PF.map(f => '<button class="chip tap' + (ui.f === f[0] ? ' on' : '') + '" data-a="pflt" data-v="' + f[0] + '">' + f[1] + '</button>').join('')) +
+    '<div class="wrap">' + searchH('نام، بارکد یا شناسه کالا', ui.q) + '<div id="list">' + prodList() + '</div></div>' +
+    '<div class="fabs"><button class="fab-x tap" data-a="p-new">کالای جدید</button><button class="fab tap" data-a="p-scan" aria-label="اسکن">' + ico('search', 26) + '</button></div>';
+}
+A.pflt = t => { ui.f = t.dataset.v; render(); };
+A['p-new'] = () => prodSheet(null);
+A['p-edit'] = t => prodSheet(t.dataset.id);
+A['p-scan'] = () => scanBarcode(txt => { const c = bcN(txt), p = findBc(c); if (p) prodSheet(p.id); else prodSheet(null, null, { bc: c }); });
+function prodSheet(id, cb, pre) {
+  const p = id ? S.products[id] : Object.assign({ name: '', unit: 'عدد', cat: '', bc: '', sid: '', sale: 0, cons: 0 }, pre || {});
+  const w = openSheet('<h3 class="st">' + (id ? 'ویرایش کالا' : 'کالای جدید') + '</h3>' + field('نام کالا *', 'pn', p.name) +
+    '<div class="f"><label for="pbc">بارکد</label><div style="display:flex;gap:8px"><input id="pbc" inputmode="numeric" value="' + esc(p.bc ? fa(p.bc) : '') + '" autocomplete="off" style="flex:1" placeholder="اسکن کن یا بنویس"><button class="chip tap" data-a="pf-scan">اسکن</button><button class="chip tap" data-a="pf-gen">ساخت</button></div></div>' +
+    '<div class="f"><label for="pu">واحد</label><input id="pu" value="' + esc(p.unit || '') + '" autocomplete="off"><div class="fchips" style="padding-top:6px">' + UNITS.map(u => '<button type="button" class="chip tap" data-a="pf-unit" data-v="' + u + '">' + u + '</button>').join('') + '</div></div>' +
+    field('دسته‌بندی', 'pc', p.cat || '') + field('شناسه کالا (مودیان)', 'psid', p.sid ? fa(p.sid) : '', { attr: 'inputmode="numeric"' }) +
+    numF('قیمت فروش (' + cur() + ')', 'psl', p.sale) + numF('قیمت مصرف‌کننده (' + cur() + ')', 'pcn', p.cons) +
+    (p.stock != null ? '<div class="hint">موجودی دفتر فروش: <b>' + qf(p.stock) + ' ' + esc(p.unit || '') + '</b>' + (p.buy ? ' • آخرین قیمت خرید: ' + mu(p.buy) : '') + '</div>' : '') +
+    '<div class="pr"><button class="btn tap" data-a="pf-save">ذخیره</button>' + (id ? '<button class="btn danger tap" data-a="pf-del">حذف</button>' : '') + '</div>');
+  w._id = id; w._cb = cb;
+}
+A['pf-unit'] = t => { $('#pu', t.closest('.sw')).value = t.dataset.v; };
+A['pf-gen'] = t => { $('#pbc', t.closest('.sw')).value = fa(genBc()); };
+A['pf-scan'] = t => { const w = t.closest('.sw'); scanBarcode(txt => { const e = $('#pbc', w); if (e) e.value = fa(bcN(txt)); }); };
+A['pf-save'] = t => {
+  const w = t.closest('.sw'), name = $('#pn', w).value.trim(); if (!name) return toast('نام کالا را بنویس.', 1);
+  const bc = bcN($('#pbc', w).value), dup = bc && findBc(bc, w._id); if (dup) return toast('این بارکد برای «' + dup.name + '» ثبت شده.', 1);
+  const v = { name, bc, unit: $('#pu', w).value.trim() || 'عدد', cat: $('#pc', w).value.trim(), sid: bcN($('#psid', w).value), sale: num($('#psl', w).value), cons: num($('#pcn', w).value) };
+  let p; if (w._id) { p = S.products[w._id]; Object.assign(p, v); p.dirty = true; } else { p = Object.assign({ id: uid(), isNew: true }, v); S.products[p.id] = p; }
+  save(); const cb = w._cb; closeSheet(w); render(); if (cs && cs.el && cs.el.isConnected) redrawS(); if (cb) cb(p);
+};
+A['pf-del'] = t => { const w = t.closest('.sw'), id = w._id; closeSheet(w); ask('این کالا حذف شود؟ از همه‌ی شمارش‌ها هم پاک می‌شود.', 'حذف', () => { delete S.products[id]; S.sessions.forEach(s => { delete s.counts[id]; }); save(); render(); if (cs && cs.el && cs.el.isConnected) redrawS(); }, true); };
+function pickProd(cb) {
+  const w = openSheet('<h3 class="st">انتخاب کالا</h3><div class="srow" style="margin:0 0 8px"><div class="search">' + ico('search', 20) + '<input data-in="pq" placeholder="نام یا بارکد" autocomplete="off"></div></div><div id="pql"></div>'); w._cb = cb; pqDraw(w, '');
+  setTimeout(() => { const e = $('[data-in=pq]', w); e && e.focus(); }, 120);
+}
+function pqDraw(w, q) { const ps = prods().filter(p => prodMatch(p, q)).sort((a, b) => (a.name || '').localeCompare(b.name || '', 'fa')).slice(0, 40); $('#pql', w).innerHTML = ps.length ? '<div class="list">' + ps.map(p => rowH({ a: 'pq-pick', id: p.id, title: p.name, sub: p.bc ? fa(p.bc) : 'بدون بارکد', icon: 'box' })).join('') + '</div>' : '<div class="hint" style="text-align:center">پیدا نشد.</div>'; }
+I.pq = t => pqDraw(t.closest('.sw'), t.value);
+A['pq-pick'] = t => { const w = t.closest('.sw'), cb = w._cb; closeSheet(w); cb(S.products[t.dataset.id]); };
+
+/* ================= برچسب بارکد ================= */
+const SIZES = { '50x30': { w: 50, h: 30, fn: 7.5, fp: 9.5, bh: 11, l: '۵۰×۳۰ میلی‌متر' }, '40x25': { w: 40, h: 25, fn: 6.5, fp: 8.5, bh: 8.5, l: '۴۰×۲۵' }, '60x40': { w: 60, h: 40, fn: 9, fp: 11, bh: 16, l: '۶۰×۴۰' }, '70x37': { w: 70, h: 37, fn: 8.5, fp: 10.5, bh: 14, l: 'برگ A4 (۳×۸)', a4: 1 } };
+const lab = { sel: {}, size: '50x30', price: 'cons', copies: 'one', n: 1 };
+function labList() {
+  const ps = prods().filter(p => prodMatch(p, ui.q)).sort((a, b) => (a.name || '').localeCompare(b.name || '', 'fa')).slice(0, 300);
+  if (!prods().length) return empty('کالایی نیست', '<div class="hint">اول کالا تعریف کن.</div>');
+  return '<div class="list">' + ps.map(p => { const ok = ean13(p.bc); return rowH({ a: 'l-tg', id: p.id, title: p.name, sub: p.bc ? fa(p.bc) + (ok ? '' : ' — بارکد استاندارد EAN نیست') : 'بدون بارکد', icon: lab.sel[p.id] ? 'check' : 'tag', av: lab.sel[p.id] ? 'green' : !ok ? 'amber' : '', end: p.cons || p.sale ? '<small class="mut">' + mu(lab.price === 'sale' ? p.sale : p.cons || p.sale) + '</small>' : '' }); }).join('') + '</div>';
+}
+function tabLab() {
+  const n = Object.keys(lab.sel).length, ch = (name, opts, v) => '<div class="f"><label>' + name[1] + '</label><div style="padding-top:8px">' + chipsH(name[0], opts, v) + '</div></div>';
+  return topH('چاپ برچسب', 'کالاهای انتخاب‌شده', fa(n), '<button class="chip tap" data-a="l-all">انتخاب همه‌ی لیست</button><button class="chip tap" data-a="l-none">پاک‌کردن انتخاب</button>') +
+    '<div class="wrap"><div class="box" style="margin-top:12px">' + ch(['lsz', 'اندازه‌ی برچسب'], Object.keys(SIZES).map(k => [k, SIZES[k].l]), lab.size) + ch(['lpr', 'قیمت روی برچسب'], [['cons', 'مصرف‌کننده'], ['sale', 'فروش'], ['none', 'بدون قیمت']], lab.price) + ch(['lcp', 'تعداد برچسب هر کالا'], [['one', 'یکی'], ['cnt', 'به تعداد آخرین شمارش'], ['num', 'عدد دلخواه']], lab.copies) +
+    (lab.copies === 'num' ? numF('تعداد', 'lbn', lab.n) : '') + '</div>' + searchH('نام یا بارکد', ui.q) + '<div id="list">' + labList() + '</div></div>' +
+    '<div class="fabs"><button class="fab-x tap" data-a="l-print">چاپ ' + fa(n) + ' کالا</button></div>';
+}
+chipH.lsz = v => { lab.size = v; render(); }; chipH.lpr = v => { lab.price = v; render(); }; chipH.lcp = v => { lab.copies = v; render(); };
+A['l-tg'] = t => { const id = t.dataset.id; if (lab.sel[id]) delete lab.sel[id]; else lab.sel[id] = 1; const sc = $('#main').scrollTop; render(); $('#main').scrollTop = sc; };
+A['l-all'] = () => { prods().filter(p => prodMatch(p, ui.q)).forEach(p => { lab.sel[p.id] = 1; }); render(); };
+A['l-none'] = () => { lab.sel = {}; render(); };
+function bcSvg(code) {
+  const bits = L.eanBits(code), q = 9, w = bits.length + 2 * q; let r = '', i = 0;
+  while (i < bits.length) { if (bits[i] === '1') { let j = i; while (bits[j] === '1') j++; r += '<rect x="' + (q + i) + '" y="0" width="' + (j - i) + '" height="40"/>'; i = j; } else i++; }
+  return '<svg viewBox="0 0 ' + w + ' 40" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">' + r + '</svg>';
+}
+function labelH(p, z, code) {
+  const price = lab.price === 'none' ? 0 : lab.price === 'sale' ? p.sale : (p.cons || p.sale);
+  return '<div class="lb" style="width:' + z.w + 'mm;height:' + z.h + 'mm"><div class="ln" style="font-size:' + z.fn + 'pt">' + esc(p.name) + '</div>' + (price ? '<div class="lp" style="font-size:' + z.fp + 'pt">' + fa(grp(price)) + ' ' + esc(cur()) + '</div>' : '') + '<div class="lbc" style="height:' + z.bh + 'mm">' + bcSvg(code) + '</div><div class="ld" style="font-size:' + (z.fn - 0.5) + 'pt">' + code + '</div></div>';
+}
+A['l-print'] = () => {
+  const ids = Object.keys(lab.sel).filter(id => S.products[id]); if (!ids.length) return toast('اول کالاها را انتخاب کن.', 1);
+  const z = SIZES[lab.size], last = S.sessions.slice().sort((a, b) => b.ts - a.ts)[0], html = []; let skip = 0, total = 0;
+  if (lab.copies === 'num') lab.n = Math.max(1, num($('#lbn') ? $('#lbn').value : lab.n) || 1);
+  for (const id of ids) { const p = S.products[id], code = ean13(p.bc); if (!code) { skip++; continue; } const n = lab.copies === 'cnt' ? Math.max(0, Math.round(last && last.counts[id] || 0)) : lab.copies === 'num' ? lab.n : 1; for (let i = 0; i < n && total < 2000; i++) { html.push(labelH(p, z, code)); total++; } }
+  if (!html.length) return toast(skip ? 'کالاهای انتخابی بارکد استاندارد ندارند. در ویرایش کالا «ساخت» را بزن.' : 'برچسبی برای چاپ نیست.', 1);
+  if (skip) toast(fa(skip) + ' کالا بدون بارکد استاندارد رد شد.', 1);
+  const css = '<style>@page{size:' + (z.a4 ? 'A4' : z.w + 'mm ' + z.h + 'mm') + ';margin:0}</style>';
+  printHtml(css + '<div class="lbs' + (z.a4 ? ' a4' : '') + '">' + html.join('') + '</div>', 'lbl');
+};
+function printHtml(html, cls) {
+  let r = $('#printroot'); if (!r) { r = document.createElement('div'); r.id = 'printroot'; document.body.appendChild(r); }
+  r.className = cls || ''; r.innerHTML = html; document.body.classList.add('printing');
+  const off = () => { document.body.classList.remove('printing'); window.removeEventListener('afterprint', off); };
+  window.addEventListener('afterprint', off);
+  setTimeout(() => { try { window.print(); } catch (e) { off(); toast('چاپ در این دستگاه ممکن نیست.', 1); } }, 150);
+}
+
+/* ================= بیشتر: ورود و خروج، تنظیمات ================= */
+function tabMore() {
+  const tg = (k, t) => '<button class="chk tap' + (S.cfg[k] ? ' on' : '') + '" data-a="cfg-tg" data-k="' + k + '" style="margin-top:8px;padding:10px 12px;border-radius:var(--r-sm);background:var(--card);width:100%"><span class="b">' + ico('check', 16) + '</span><span>' + t + '</span></button>';
+  const nNew = prods().filter(p => p.isNew || p.dirty).length;
+  return topH('بیشتر') + '<div class="wrap"><div class="list" style="margin-top:12px">' +
+    rowH({ a: 'm-imp', title: 'ورود کالاها از دفتر فروش', sub: S.fromAt ? 'آخرین ورود: ' + fdate(S.fromAt) : 'فایل «برای انبارگردان» را انتخاب کن', icon: 'inn' }) +
+    rowH({ a: 'm-exp', title: 'ارسال کالاهای جدید و ویرایش‌شده', sub: fa(nNew) + ' کالا آماده‌ی ارسال به دفتر فروش', icon: 'out' }) +
+    rowH({ a: 'm-bk', title: 'پشتیبان‌گیری کامل', sub: 'ذخیره‌ی همه‌ی اطلاعات در یک فایل', icon: 'cloud' }) +
+    rowH({ a: 'm-rs', title: 'بازیابی پشتیبان', sub: 'برگرداندن اطلاعات از فایل پشتیبان', icon: 'shield' }) + '</div>' +
+    '<div class="box sec"><b>تنظیمات</b>' + tg('sound', 'صدا و لرزش بعد از هر اسکن') + tg('askQty', 'بعد از هر اسکن، تعداد را بپرس (برای شمارش کارتنی)') + field('واحد پول', 'cfcur', cur()) +
+    '<div class="hint" style="margin-top:10px">اسکنر بلوتوثی یا USB مثل کیبورد کار می‌کند؛ در صفحه‌ی شمارش کادر «منتظر اسکن» را انتخاب نگه دار و اسکن کن.</div></div>' +
+    '<div class="pr"><button class="btn danger tap" data-a="m-wipe">پاک کردن همه‌ی اطلاعات</button></div></div>';
+}
+A['cfg-tg'] = t => { const k = t.dataset.k; S.cfg[k] = !S.cfg[k]; save(); t.classList.toggle('on'); };
+document.addEventListener('input', e => { if (e.target && e.target.id === 'cfcur') { S.cfg.currency = e.target.value.trim() || 'ریال'; save(); } });
+A['m-imp'] = () => pickFile('.json,application/json', txt => { let o; try { o = JSON.parse(txt); } catch (e) { return toast('فایل درست نیست.', 1); } const n = importCatalog(o); if (n < 0) return toast('این فایل برای انبارگردان نیست.', 1); toast(fa(n) + ' کالا وارد شد.'); render(); });
+function rekey(oldId, newId) { S.sessions.forEach(s => { if (s.counts[oldId] != null) { s.counts[newId] = (s.counts[newId] || 0) + s.counts[oldId]; delete s.counts[oldId]; } if (s.order && s.order[oldId]) { s.order[newId] = s.order[oldId]; delete s.order[oldId]; } }); delete S.products[oldId]; }
+function importCatalog(o) {
+  if (!o || o.kind !== 'catalog' || !Array.isArray(o.products)) return -1; let n = 0;
+  if (o.cur) S.cfg.currency = o.cur;
+  for (const q of o.products) {
+    if (!q.id || !q.name) continue; let p = S.products[q.id];
+    const bcq = bcN(q.barcode), twin = bcq && prods().find(x => x.id !== q.id && x.isNew && bcKey(x.bc) === bcKey(bcq));
+    if (!p) { p = S.products[q.id] = { id: q.id, name: '', bc: '', unit: '', cat: '', sid: '', sale: 0, cons: 0 }; }
+    if (twin) { Object.assign(p, { sale: twin.sale || 0, cons: twin.cons || 0 }); rekey(twin.id, q.id); }
+    const set = (f, v) => { if (v != null && v !== '' && (!p.dirty || !p[f])) p[f] = v; };
+    set('name', q.name); set('unit', q.unit); set('cat', q.cat); set('bc', bcq); set('sid', q.sid); set('sale', q.sale); set('cons', q.cons);
+    p.stock = +q.stock || 0; p.buy = +q.buy || 0; p.isNew = false; n++;
+  }
+  S.fromAt = Date.now(); save(); return n;
+}
+A['m-exp'] = () => { const ps = prods().filter(p => p.isNew || p.dirty); if (!ps.length) return toast('کالای جدید یا ویرایش‌شده‌ای نیست.', 1); shareFile(new Blob([JSON.stringify({ app: 'anbargardan', kind: 'result', v: 1, ts: Date.now(), session: '', products: ps.map(pubP), counts: [] })], { type: 'application/json' }), fileName('کالاهای-انبارگردان', 'json'), 'کالاها'); };
+A['m-bk'] = () => shareFile(new Blob([JSON.stringify({ app: 'anbargardan-backup', ts: Date.now(), S })], { type: 'application/json' }), fileName('پشتیبان-انبارگردان-' + fdate(Date.now()).replace(/\//g, '-'), 'json'), 'پشتیبان');
+A['m-rs'] = () => pickFile('.json,application/json', txt => { let o; try { o = JSON.parse(txt); } catch (e) { return toast('فایل درست نیست.', 1); } if (!o || o.app !== 'anbargardan-backup' || !o.S) return toast('این فایل پشتیبان انبارگردان نیست.', 1); ask('همه‌ی اطلاعات فعلی با این پشتیبان جایگزین شود؟', 'بازیابی', () => { S = { ...newS(), ...o.S }; save(); render(); toast('بازیابی شد.'); }, true); });
+A['m-wipe'] = () => ask('همه‌ی کالاها و شمارش‌ها پاک شود؟ قابل برگشت نیست (اگر پشتیبان نگرفته‌ای اول بگیر).', 'پاک کن', () => { S = newS(); save(); render(); }, true);
+/* ================= شروع ================= */
+(async function () {
+  const s = await kvGet('s'); if (s && s.v) { S = { ...newS(), ...s }; S.cfg = { ...newS().cfg, ...(s.cfg || {}) }; } ready = true; render();
+  window.__ab = { get S() { return S; }, A, I, render, onScan, get cs() { return cs; }, importCatalog, prodSheet, ean13, genBc, openSession, labelH, bcSvg, lab };
+})();
+
+</script><script>if("serviceWorker"in navigator&&location.protocol.startsWith("http")){addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}))}</script></body></html>
