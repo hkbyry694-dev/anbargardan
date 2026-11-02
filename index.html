@@ -426,6 +426,7 @@ body.aso #asfab,#sheets:has(.sw)~#asfab{opacity:0;pointer-events:none;transform:
 .lb .ld{letter-spacing:.06em;direction:ltr;font-family:monospace}
 @media print{.lbs.a4 .lb{outline:0}}
 .tbl{width:100%;border-collapse:collapse;font-size:13px}.tbl th,.tbl td{padding:8px 6px;border-bottom:1px solid var(--line,#e5e9f0);text-align:center}.tbl td:first-child,.tbl th:first-child{text-align:right}
+.rwd{display:flex;align-items:center;gap:8px;margin-bottom:8px}.rwd .row{flex:1;margin:0}.rdel{flex:none;width:44px;height:44px;border-radius:14px;border:0;background:#fdeceb;color:#d93025;display:flex;align-items:center;justify-content:center}.rwd .chip{flex:none}
 .top{padding-top:calc(14px + env(safe-area-inset-top,0px))}</style></head><body><div id="app"><main id="main"></main><nav class="bar" id="nav" aria-label="بخش‌های اصلی"></nav></div><div id="pages"></div><div id="sheets"></div><script>
 /* ساخت فایل اکسل (xlsx) بدون هیچ کتابخانه‌ای: zip بدون فشرده‌سازی + XML */
 (function (root) {
@@ -833,9 +834,9 @@ function findBc(code, except) { const k = bcKey(code); if (!k) return null; retu
 const ean13 = c => { c = bcN(c); if (c.length === 12) c = '0' + c; return c.length === 13 && eanOk(c) ? c : c.length === 8 && eanOk(c) ? c : ''; };
 /* ---- صدا ---- */
 /* ---- نمایش اصلی ---- */
-const TABS = [['count', 'check', 'شمارش'], ['prod', 'box', 'کالاها'], ['lab', 'tag', 'برچسب'], ['more', 'menu', 'بیشتر']];
+const TABS = [['count', 'check', 'شمارش'], ['prod', 'box', 'کالاها'], ['price', 'coin', 'قیمت'], ['lab', 'tag', 'برچسب'], ['more', 'menu', 'بیشتر']];
 const ui = { tab: 'count', q: '', f: 'all' };
-const VIEWS = { count: tabCount, prod: tabProd, lab: tabLab, more: tabMore };
+const VIEWS = { count: tabCount, prod: tabProd, price: tabPrice, lab: tabLab, more: tabMore };
 function render() {
   const m = $('#main'), n = $('#nav'); if (!ready) { m.innerHTML = ''; return; }
   const sc = m.scrollTop; m.innerHTML = VIEWS[ui.tab](); m.scrollTop = sc;
@@ -845,13 +846,27 @@ A.tab = t => { ui.tab = t.dataset.id; ui.q = ''; ui.f = 'all'; render(); $('#mai
 const topH = (h, lbl, val, chips) => '<div class="top"><h1>' + h + '</h1>' + (lbl ? '<div class="status"><div class="lbl">' + lbl + '</div><div class="val">' + val + '</div></div>' : '') + (chips ? '<div class="chips">' + chips + '</div>' : '') + '</div>';
 const searchH = (ph, v) => '<div class="srow" style="margin:10px 0 0"><div class="search">' + ico('search', 20) + '<input data-in="q" placeholder="' + ph + '" value="' + esc(v) + '" autocomplete="off"></div></div>';
 I.q = t => { ui.q = t.value; const l = $('#list'); if (l) l.innerHTML = ui.tab === 'prod' ? prodList() : labList(); };
+const rowDel = (row, act, id) => '<div class="rwd">' + row + '<button class="rdel tap" data-a="' + act + '" data-id="' + esc(id) + '" aria-label="حذف">' + ico('trash', 20) + '</button></div>';
+function toTrash(kind, label, data) { (S.trash = S.trash || []).push({ id: uid(), kind, label, ts: Date.now(), data }); save(); }
+const TK = { product: 'کالا', session: 'شمارش', count: 'ردیف شمارش' };
+function delProduct(id) {
+  const p = S.products[id]; if (!p) return; const cnts = [];
+  S.sessions.forEach(s => { if (s.counts[id] != null) { cnts.push([s.id, s.counts[id], (s.order || {})[id] || 0]); delete s.counts[id]; if (s.order) delete s.order[id]; } });
+  toTrash('product', p.name, { p, cnts }); delete S.products[id]; delete lab.sel[id]; if (pc.pid === id) pc.pid = ''; save(); render(); if (cs && cs.el && cs.el.isConnected) redrawS(); toast('به سطل زباله رفت.');
+}
+function delSession(id) { const s = sess(id); if (!s) return; toTrash('session', s.name, { s }); S.sessions = S.sessions.filter(x => x.id !== id); save(); render(); toast('به سطل زباله رفت.'); }
+function delCount(sid, pid) { const s = sess(sid), p = S.products[pid]; if (!s || s.counts[pid] == null) return; toTrash('count', (p ? p.name : '') + ' — ' + s.name, { sid, pid, qty: s.counts[pid] }); delete s.counts[pid]; if (cs && cs.lastPid === pid) cs.lastPid = ''; save(); redrawS(); toast('به سطل زباله رفت.'); }
+A['s-open'] = t => openSession(t.dataset.id);
+A['sd-ask'] = t => { const id = t.dataset.id, s = sess(id); ask('شمارش «' + esc(s ? s.name : '') + '» به سطل زباله برود؟', 'حذف', () => delSession(id), true); };
+A['pd-ask'] = t => { const id = t.dataset.id, p = S.products[id]; ask('کالای «' + esc(p ? p.name : '') + '» به سطل زباله برود؟', 'حذف', () => delProduct(id), true); };
+A['cd-do'] = t => { if (cs) delCount(cs.id, t.dataset.id); };
 /* ================= جلسه‌های شمارش ================= */
 const sess = id => S.sessions.find(s => s.id === id);
 const sessTot = s => { const v = Object.values(s.counts); return { n: v.length, q: v.reduce((a, b) => a + b, 0) }; };
 function tabCount() {
   const ps = prods(), ss = S.sessions.slice().sort((a, b) => b.ts - a.ts);
   const head = topH('انبارگردانی', 'کالاهای تعریف‌شده', fa(ps.length), '<button class="chip tap" data-a="s-new">' + ico('plus', 15) + ' شمارش جدید</button>');
-  return head + '<div class="wrap">' + (ss.length ? '<div class="list">' + ss.map(s => { const t = sessTot(s); return rowH({ a: 's-open', id: s.id, title: s.name, sub: fdate(s.ts) + ' • ' + fa(t.n) + ' کالا • ' + qf(t.q) + ' عدد', icon: 'check', av: s.done ? 'green' : 'amber', end: s.done ? '<small class="mut">بسته</small>' : '' }); }).join('') + '</div>'
+  return head + '<div class="wrap">' + (ss.length ? '<div class="list">' + ss.map(s => { const t = sessTot(s); return rowDel(rowH({ a: 's-open', id: s.id, title: s.name, sub: fdate(s.ts) + ' • ' + fa(t.n) + ' کالا • ' + qf(t.q) + ' عدد', icon: 'check', av: s.done ? 'green' : 'amber', end: s.done ? '<small class="mut">بسته</small>' : '' }), 'sd-ask', s.id); }).join('') + '</div>'
     : empty('هنوز شمارشی نیست', '<div class="hint">«شمارش جدید» را بزن و کالاها را با دوربین یا اسکنر بشمار.</div>')) + '</div>' +
     '<div class="fabs"><button class="fab-x tap" data-a="s-new">شمارش جدید</button></div>';
 }
@@ -872,7 +887,7 @@ function sDraw(el) {
     (s.done ? '<div class="warn-note">این شمارش بسته شده است. برای تغییر، از منوی پایین «باز کردن دوباره» را بزن.</div>' : '<div class="box" style="margin-top:12px"><div class="f" style="margin:0"><label for="scin">بارکد را با اسکنر بزن یا تایپ کن، بعد Enter</label><input id="scin" inputmode="numeric" enterkeyhint="done" autocomplete="off" placeholder="منتظر اسکن..." data-kd="scin"></div>' +
       '<div class="pr" style="margin-top:10px"><button class="btn tap" data-a="s-cam">' + ico('search', 18) + ' اسکن با دوربین</button><button class="btn ghost tap" data-a="s-pick">افزودن دستی</button></div></div>') +
     (lp ? '<div class="box sec" id="lastc"><div class="mrow"><b>' + esc(lp.name) + '</b><b style="font-size:22px">' + qf(s.counts[lp.id] || 0) + ' <small class="mut">' + esc(lp.unit || '') + '</small></b></div>' + (s.done ? '' : '<div class="pr" style="margin-top:8px"><button class="btn tap" data-a="s-add" data-id="' + lp.id + '" data-d="1">یکی بیشتر</button><button class="btn ghost tap" data-a="s-add" data-id="' + lp.id + '" data-d="-1">یکی کمتر</button><button class="btn ghost tap" data-a="s-qty" data-id="' + lp.id + '">تعداد</button></div>') + '</div>' : '') +
-    '<div class="count" style="margin-top:14px">' + fa(ps.length) + ' کالا</div><div class="list">' + ps.map(p => rowH({ a: 's-qty', id: p.id, title: p.name, sub: (p.bc ? fa(p.bc) : 'بدون بارکد') + (p.stock != null ? ' • دفتر: ' + qf(p.stock) : ''), icon: 'box', end: endH(qf(s.counts[p.id]), p.unit || '') })).join('') + '</div>' + (ps.length ? '' : '<div class="hint" style="text-align:center;padding:20px">اولین بارکد را اسکن کن.</div>');
+    '<div class="count" style="margin-top:14px">' + fa(ps.length) + ' کالا</div><div class="list">' + ps.map(p => (s.done ? (x => x) : (x => rowDel(x, 'cd-do', p.id)))(rowH({ a: 's-qty', id: p.id, title: p.name, sub: (p.bc ? fa(p.bc) : 'بدون بارکد') + (p.stock != null ? ' • دفتر: ' + qf(p.stock) : ''), icon: 'box', end: endH(qf(s.counts[p.id]), p.unit || '') }))).join('') + '</div>' + (ps.length ? '' : '<div class="hint" style="text-align:center;padding:20px">اولین بارکد را اسکن کن.</div>');
   if (foc || (cs && cs.refocus)) { const e = $('#scin', el); e && e.focus(); }
 }
 document.addEventListener('keydown', e => { const t = e.target; if (t && t.id === 'scin' && (e.key === 'Enter' || e.keyCode === 13)) { e.preventDefault(); const v = t.value.trim(); t.value = ''; if (v) onScan(v); } });
@@ -897,13 +912,13 @@ function qtySheet(pid, add) {
 }
 A['s-qty'] = t => qtySheet(t.dataset.id);
 A['q-ok'] = t => { const w = t.closest('.sw'), s = sess(cs.id), v = num($('#qv', w).value); if (w._add) bump(s, w._pid, v); else { s.counts[w._pid] = Math.max(0, v); (s.order = s.order || {})[w._pid] = Date.now(); cs.lastPid = w._pid; save(); } closeSheet(w); redrawS(); };
-A['q-del'] = t => { const w = t.closest('.sw'), s = sess(cs.id); delete s.counts[w._pid]; if (cs.lastPid === w._pid) cs.lastPid = ''; save(); closeSheet(w); redrawS(); };
+A['q-del'] = t => { const w = t.closest('.sw'); closeSheet(w); delCount(cs.id, w._pid); };
 A['s-menu'] = () => { const s = sess(cs.id); openSheet('<h3 class="st">' + esc(s.name) + '</h3><div class="list">' +
   rowH({ a: 's-done', title: s.done ? 'باز کردن دوباره' : 'بستن شمارش', sub: s.done ? 'اجازه‌ی ادامه‌ی شمارش' : 'جلوگیری از تغییر', icon: 'check' }) + rowH({ a: 's-ren', title: 'تغییر نام', icon: 'edit' }) + rowH({ a: 's-del', title: 'حذف این شمارش', icon: 'trash', av: 'red' }) + '</div>'); };
 A['s-done'] = t => { const s = sess(cs.id); s.done = !s.done; save(); closeSheet(t.closest('.sw')); redrawS(); render(); };
 A['s-ren'] = t => { const s = sess(cs.id); closeSheet(t.closest('.sw')); const w = openSheet('<h3 class="st">تغییر نام</h3>' + field('نام', 'rnm', s.name) + '<div class="pr"><button class="btn tap" data-a="s-ren-ok">ثبت</button></div>'); };
 A['s-ren-ok'] = t => { const w = t.closest('.sw'), s = sess(cs.id), v = $('#rnm', w).value.trim(); if (v) { s.name = v; save(); } closeSheet(w); const h = cs.el.querySelector('h2'); if (h) h.textContent = s.name; render(); };
-A['s-del'] = t => { const w = t.closest('.sw'); closeSheet(w); ask('این شمارش حذف شود؟', 'حذف', () => { S.sessions = S.sessions.filter(x => x.id !== cs.id); save(); closePage(cs.el); }, true); };
+A['s-del'] = t => { const w = t.closest('.sw'); closeSheet(w); const id = cs.id, el = cs.el; ask('این شمارش به سطل زباله برود؟', 'حذف', () => { delSession(id); closePage(el); }, true); };
 /* ---- نتیجه ---- */
 function resRows(s, only) {
   const rows = [];
@@ -947,7 +962,7 @@ function prodFilter(p) { const f = ui.f; return f === 'nobc' ? !p.bc : f === 'no
 function prodList() {
   const ps = prods().filter(p => prodMatch(p, ui.q) && prodFilter(p)).sort((a, b) => (a.name || '').localeCompare(b.name || '', 'fa'));
   if (!prods().length) return empty('کالایی نیست', '<div class="hint">کالای جدید تعریف کن یا از «بیشتر» فایل کالاهای دفتر فروش را وارد کن.</div>');
-  return '<div class="count">' + fa(ps.length) + ' کالا</div><div class="list">' + ps.slice(0, 300).map(p => rowH({ a: 'p-edit', id: p.id, title: p.name, sub: (p.bc ? fa(p.bc) : 'بدون بارکد') + (p.sale ? ' • ' + mu(p.sale) : ''), icon: 'box', av: !p.bc ? 'amber' : p.isNew ? 'green' : '', end: p.stock != null ? endH(qf(p.stock), esc(p.unit || '')) : '' })).join('') + '</div>' + (ps.length > 300 ? '<div class="hint" style="text-align:center">برای دیدن بقیه جستجو کن.</div>' : '');
+  return '<div class="count">' + fa(ps.length) + ' کالا</div><div class="list">' + ps.slice(0, 300).map(p => rowDel(rowH({ a: 'p-edit', id: p.id, title: p.name, sub: (p.bc ? fa(p.bc) : 'بدون بارکد') + (p.sale ? ' • ' + mu(p.sale) : ''), icon: 'box', av: !p.bc ? 'amber' : p.isNew ? 'green' : '', end: p.stock != null ? endH(qf(p.stock), esc(p.unit || '')) : '' }), 'pd-ask', p.id)).join('') + '</div>' + (ps.length > 300 ? '<div class="hint" style="text-align:center">برای دیدن بقیه جستجو کن.</div>' : '');
 }
 function tabProd() {
   return topH('کالاها', 'تعداد کالا', fa(prods().length), PF.map(f => '<button class="chip tap' + (ui.f === f[0] ? ' on' : '') + '" data-a="pflt" data-v="' + f[0] + '">' + f[1] + '</button>').join('')) +
@@ -979,7 +994,7 @@ A['pf-save'] = t => {
   let p; if (w._id) { p = S.products[w._id]; Object.assign(p, v); p.dirty = true; } else { p = Object.assign({ id: uid(), isNew: true }, v); S.products[p.id] = p; }
   save(); const cb = w._cb; closeSheet(w); render(); if (cs && cs.el && cs.el.isConnected) redrawS(); if (cb) cb(p);
 };
-A['pf-del'] = t => { const w = t.closest('.sw'), id = w._id; closeSheet(w); ask('این کالا حذف شود؟ از همه‌ی شمارش‌ها هم پاک می‌شود.', 'حذف', () => { delete S.products[id]; S.sessions.forEach(s => { delete s.counts[id]; }); save(); render(); if (cs && cs.el && cs.el.isConnected) redrawS(); }, true); };
+A['pf-del'] = t => { const w = t.closest('.sw'), id = w._id; closeSheet(w); ask('این کالا به سطل زباله برود؟ از شمارش‌ها هم برداشته می‌شود (با بازگردانی برمی‌گردد).', 'حذف', () => delProduct(id), true); };
 function pickProd(cb) {
   const w = openSheet('<h3 class="st">انتخاب کالا</h3><div class="srow" style="margin:0 0 8px"><div class="search">' + ico('search', 20) + '<input data-in="pq" placeholder="نام یا بارکد" autocomplete="off"></div></div><div id="pql"></div>'); w._cb = cb; pqDraw(w, '');
   setTimeout(() => { const e = $('[data-in=pq]', w); e && e.focus(); }, 120);
@@ -1041,6 +1056,7 @@ function tabMore() {
   return topH('بیشتر') + '<div class="wrap"><div class="list" style="margin-top:12px">' +
     rowH({ a: 'm-imp', title: 'ورود کالاها از دفتر فروش', sub: S.fromAt ? 'آخرین ورود: ' + fdate(S.fromAt) : 'فایل «برای انبارگردان» را انتخاب کن', icon: 'inn' }) +
     rowH({ a: 'm-exp', title: 'ارسال کالاهای جدید و ویرایش‌شده', sub: fa(nNew) + ' کالا آماده‌ی ارسال به دفتر فروش', icon: 'out' }) +
+    rowH({ a: 'm-trash', title: 'سطل زباله', sub: (S.trash || []).length ? fa(S.trash.length) + ' مورد (بعد از ۳۰ روز پاک می‌شود)' : 'خالی', icon: 'trash' }) +
     rowH({ a: 'm-bk', title: 'پشتیبان‌گیری کامل', sub: 'ذخیره‌ی همه‌ی اطلاعات در یک فایل', icon: 'cloud' }) +
     rowH({ a: 'm-rs', title: 'بازیابی پشتیبان', sub: 'برگرداندن اطلاعات از فایل پشتیبان', icon: 'shield' }) + '</div>' +
     '<div class="box sec"><b>تنظیمات</b>' + tg('sound', 'صدا و لرزش بعد از هر اسکن') + tg('askQty', 'بعد از هر اسکن، تعداد را بپرس (برای شمارش کارتنی)') + field('واحد پول', 'cfcur', cur()) +
@@ -1069,9 +1085,60 @@ A['m-exp'] = () => { const ps = prods().filter(p => p.isNew || p.dirty); if (!ps
 A['m-bk'] = () => shareFile(new Blob([JSON.stringify({ app: 'anbargardan-backup', ts: Date.now(), S })], { type: 'application/json' }), fileName('پشتیبان-انبارگردان-' + fdate(Date.now()).replace(/\//g, '-'), 'json'), 'پشتیبان');
 A['m-rs'] = () => pickFile('.json,application/json', txt => { let o; try { o = JSON.parse(txt); } catch (e) { return toast('فایل درست نیست.', 1); } if (!o || o.app !== 'anbargardan-backup' || !o.S) return toast('این فایل پشتیبان انبارگردان نیست.', 1); ask('همه‌ی اطلاعات فعلی با این پشتیبان جایگزین شود؟', 'بازیابی', () => { S = { ...newS(), ...o.S }; save(); render(); toast('بازیابی شد.'); }, true); });
 A['m-wipe'] = () => ask('همه‌ی کالاها و شمارش‌ها پاک شود؟ قابل برگشت نیست (اگر پشتیبان نگرفته‌ای اول بگیر).', 'پاک کن', () => { S = newS(); save(); render(); }, true);
+/* ================= کنترل قیمت ================= */
+let pc = { pid: '', unk: '', log: [] };
+const pBase = p => (S.cfg.pcBasis === 'sale' ? p.sale : (p.cons || p.sale)) || 0;
+function tabPrice() {
+  const p = S.products[pc.pid], basis = S.cfg.pcBasis === 'sale' ? 'sale' : 'cons';
+  const card = p ? '<div class="box sec" id="pcard"><div class="mrow"><b>' + esc(p.name) + '</b><small class="mut">' + (p.bc ? fa(p.bc) : '') + '</small></div><div class="boxes g2" style="margin-top:10px"><div class="cell"><small>قیمت مصرف‌کننده</small><b>' + (p.cons ? mu(p.cons) : '—') + '</b></div><div class="cell"><small>قیمت فروش</small><b>' + (p.sale ? mu(p.sale) : '—') + '</b></div></div>' +
+    (p.stock != null ? '<div class="hint">موجودی دفتر: ' + qf(p.stock) + ' ' + esc(p.unit || '') + '</div>' : '') +
+    numF('قیمت روی قفسه (' + cur() + ')', 'shp', '', 'قیمت چاپ‌شده روی قفسه را بنویس').replace('data-in="money"', 'data-in="shp"') + '<div id="shv"></div><div class="pr"><button class="btn tap" data-a="pc-ok">ثبت نتیجه</button><button class="btn ghost tap" data-a="p-edit" data-id="' + p.id + '">ویرایش کالا</button></div></div>'
+    : pc.unk ? '<div class="box sec"><div class="warn-note">کالایی با بارکد ' + fa(pc.unk) + ' ثبت نشده.</div><div class="pr"><button class="btn tap" data-a="pc-new">تعریف کالا با این بارکد</button></div></div>' : '';
+  return topH('کنترل قیمت', 'قیمت مرجع برای مقایسه', basis === 'sale' ? 'قیمت فروش' : 'قیمت مصرف‌کننده', '<button class="chip tap' + (basis === 'cons' ? ' on' : '') + '" data-a="pc-basis" data-v="cons">مصرف‌کننده</button><button class="chip tap' + (basis === 'sale' ? ' on' : '') + '" data-a="pc-basis" data-v="sale">فروش</button>') +
+    '<div class="wrap"><div class="box" style="margin-top:12px"><div class="f" style="margin:0"><label for="pcin">کالا را اسکن کن (یا بارکد را بنویس و Enter بزن)</label><input id="pcin" inputmode="numeric" enterkeyhint="done" autocomplete="off" placeholder="منتظر اسکن..."></div><div class="pr" style="margin-top:10px"><button class="btn tap" data-a="pc-cam">' + ico('search', 18) + ' اسکن با دوربین</button><button class="btn ghost tap" data-a="pc-pick">انتخاب دستی</button></div></div>' + card +
+    (pc.log.length ? '<div class="count" style="margin-top:14px">آخرین بررسی‌ها</div><div class="list">' + pc.log.slice(0, 20).map(x => rowH({ a: 'pc-show', id: x.pid, title: x.name, sub: x.shelf ? 'قفسه: ' + mu(x.shelf) + ' • مرجع: ' + mu(x.base) : 'بدون ثبت قیمت قفسه', icon: x.ok === true ? 'check' : x.ok === false ? 'close' : 'tag', av: x.ok === true ? 'green' : x.ok === false ? 'red' : '' })).join('') + '</div>' : '') + '</div>';
+}
+A['pc-basis'] = t => { S.cfg.pcBasis = t.dataset.v; save(); render(); };
+function priceScan(code) {
+  const c = bcN(code); if (!c) return 'بارکد نامعتبر'; const p = findBc(c);
+  if (!p) { pc.pid = ''; pc.unk = c; pcDraw(); return 'کالا پیدا نشد'; }
+  pc.pid = p.id; pc.unk = ''; pcDraw(); return p.name;
+}
+function pcDraw() { render(); const e = $(pc.pid ? '#shp' : '#pcin'); e && e.focus(); }
+function pcVerdict() {
+  const p = S.products[pc.pid], e = $('#shp'), v = $('#shv'); if (!p || !e || !v) return null;
+  const sh = num(e.value), base = pBase(p); if (!sh) { v.innerHTML = ''; return null; }
+  if (!base) { v.innerHTML = '<div class="warn-note">برای این کالا قیمت مرجع ثبت نشده.</div>'; return null; }
+  const ok = Math.abs(sh - base) < 0.5; v.innerHTML = ok ? '<div class="ok-note">قیمت قفسه درست است ✓</div>' : '<div class="warn-note">قیمت قفسه اشتباه است: ' + mu(sh) + ' به‌جای ' + mu(base) + ' (اختلاف ' + mu(Math.abs(sh - base)) + ')</div>'; return ok;
+}
+I.shp = t => { I.money(t); pcVerdict(); };
+A['pc-ok'] = () => { const p = S.products[pc.pid]; if (!p) return; const e = $('#shp'), sh = e ? num(e.value) : 0, ok = sh ? pcVerdict() : null; pc.log.unshift({ pid: p.id, name: p.name, shelf: sh, base: pBase(p), ok: sh && pBase(p) ? ok : null }); pc.pid = ''; pc.unk = ''; pcDraw(); };
+A['pc-show'] = t => { pc.pid = t.dataset.id; pc.unk = ''; pcDraw(); };
+A['pc-new'] = () => prodSheet(null, p => { pc.pid = p.id; pc.unk = ''; pcDraw(); }, { bc: pc.unk });
+A['pc-cam'] = () => scanBarcode(txt => priceScan(txt), { multi: true, onEnd: () => { const e = $(pc.pid ? '#shp' : '#pcin'); e && e.focus(); } });
+A['pc-pick'] = () => pickProd(p => { pc.pid = p.id; pc.unk = ''; pcDraw(); });
+document.addEventListener('keydown', e => { const t = e.target; if (!t || (e.key !== 'Enter' && e.keyCode !== 13)) return;
+  if (t.id === 'pcin') { e.preventDefault(); const v = t.value.trim(); t.value = ''; if (v) priceScan(v); }
+  else if (t.id === 'shp') { e.preventDefault(); A['pc-ok'](); } });
+/* ================= سطل زباله ================= */
+function trashDraw(el) {
+  const l = S.trash || [];
+  $('.pbody', el).innerHTML = l.length ? '<div class="hint" style="margin-top:12px">مورد‌های حذف‌شده تا ۳۰ روز اینجا می‌مانند.</div><div class="list" style="margin-top:10px">' + l.slice().reverse().map(x => '<div class="rwd"><div class="row" style="flex:1"><span class="av amber">' + ico('trash', 22) + '</span><span class="tx"><b>' + esc(x.label) + '</b><small>' + (TK[x.kind] || '') + ' • ' + fdate(x.ts) + '</small></span></div><button class="chip tap" data-a="tr-back" data-id="' + x.id + '">برگردان</button><button class="rdel tap" data-a="tr-del" data-id="' + x.id + '" aria-label="حذف همیشگی">' + ico('close', 20) + '</button></div>').join('') + '</div><div class="pr"><button class="btn danger tap" data-a="tr-empty">خالی کردن سطل زباله</button></div>' : empty('سطل زباله خالی است', '');
+}
+A['m-trash'] = () => { const p = openPage({ title: 'سطل زباله', body: '' }); p.el._redraw = () => trashDraw(p.el); trashDraw(p.el); };
+const trEl = () => pages[pages.length - 1];
+A['tr-back'] = t => {
+  const x = (S.trash || []).find(i => i.id === t.dataset.id); if (!x) return; const d = x.data;
+  if (x.kind === 'product') { S.products[d.p.id] = d.p; d.cnts.forEach(c => { const s = sess(c[0]); if (s) { s.counts[d.p.id] = c[1]; (s.order = s.order || {})[d.p.id] = c[2]; } }); }
+  else if (x.kind === 'session') { if (!sess(d.s.id)) S.sessions.push(d.s); }
+  else if (x.kind === 'count') { const s = sess(d.sid); if (!s || !S.products[d.pid]) return toast('اول شمارش یا کالای مربوط را برگردان.', 1); s.counts[d.pid] = d.qty; }
+  S.trash = S.trash.filter(i => i.id !== x.id); save(); toast('برگردانده شد.'); trashDraw(trEl()); render();
+};
+A['tr-del'] = t => { const id = t.dataset.id; ask('برای همیشه پاک شود؟', 'پاک کن', () => { S.trash = S.trash.filter(i => i.id !== id); save(); trashDraw(trEl()); render(); }, true); };
+A['tr-empty'] = () => ask('همه‌ی موردهای سطل زباله برای همیشه پاک شود؟', 'خالی کن', () => { S.trash = []; save(); trashDraw(trEl()); render(); }, true);
 /* ================= شروع ================= */
 (async function () {
-  const s = await kvGet('s'); if (s && s.v) { S = { ...newS(), ...s }; S.cfg = { ...newS().cfg, ...(s.cfg || {}) }; } ready = true; render();
+  const s = await kvGet('s'); if (s && s.v) { S = { ...newS(), ...s }; S.cfg = { ...newS().cfg, ...(s.cfg || {}) }; } S.trash = (S.trash || []).filter(x => Date.now() - x.ts < 30 * 864e5); ready = true; render();
   window.__ab = { get S() { return S; }, A, I, render, onScan, get cs() { return cs; }, importCatalog, prodSheet, ean13, genBc, openSession, labelH, bcSvg, lab };
 })();
 
